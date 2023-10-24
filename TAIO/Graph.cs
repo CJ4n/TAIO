@@ -21,6 +21,7 @@ public class Graph {
             try
             {
                 using var file = new StreamReader(pathToFile);
+                int nGraphs = Convert.ToInt32(file.ReadLine());
                 while (file.ReadLine() is { } ln) {
                     if (ln == "")
                     {
