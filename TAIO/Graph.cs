@@ -115,4 +115,11 @@ public class Graph {
         {
             return VerticesCount + EdgesCount;
         }
+
+        public HashSet<int> getNeighboursBi(int v)
+        {
+            return Enumerable.Range(0, BidirectionalMatrix.GetLength(1))
+                .Select(x => BidirectionalMatrix[v, x])
+                .ToHashSet();
+        }
 }
