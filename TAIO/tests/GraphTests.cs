@@ -12,9 +12,15 @@ public class GraphTests
     }
     public static void run()
     {
-        var g = Graph.ParseInputFile("graphs/test1.txt")[0]; 
+        //var g = Graph.ParseInputFile("graphs/test1.txt")[0]; 
         // assert(g.getNeighboursBi(2), new HashSet<int> {0, 1});
+
+        Graph g = Graph.GetRandomGraph(10);
+        Console.WriteLine(g);
+        Helpers.PrintItems(new BronKerboschMaximumClique().solve(g));
         
-        
+
     }
+
+    
 }

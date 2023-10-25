@@ -1,5 +1,7 @@
+using System.Text;
+
 public class Graph {
-        private int VerticesCount { get; set; }
+        public int VerticesCount { get; }
         private int EdgesCount { get; set; }
         private int[,]? Matrix { get; set; }
 
@@ -51,6 +53,24 @@ public class Graph {
             return result;
         }
 
+        /*
+         * Generates random graph
+         */
+        public static Graph GetRandomGraph(int n)
+        {
+            var r = new Random();
+            Graph g = new Graph(n);
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    if (i == j)
+                        g.Matrix![i, j] = 0;
+                    else
+                        g.Matrix![i, j] = r.Next(0, 2);
+
+            g.BidirectionalMatrix = g.RemoveSingularEdges();
+            return g;
+        }
+        
         /*
          * Prints the graph as an adjacency matrix.
          */
@@ -116,10 +136,26 @@ public class Graph {
             return VerticesCount + EdgesCount;
         }
 
-        public HashSet<int> getNeighboursBi(int v)
+
+        public HashSet<int> GetNeighboursBi(int v)
         {
-            return Enumerable.Range(0, BidirectionalMatrix.GetLength(1))
-                .Select(x => BidirectionalMatrix[v, x])
+            return Enumerable.Range(0, BidirectionalMatrix!.GetLength(1))
+                .Where(x => BidirectionalMatrix[v, x] > 0)
                 .ToHashSet();
+        }
+
+        public override String ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < VerticesCount; ++i)
+            {
+                for (int j = 0; j < VerticesCount; ++j)
+                {
+                    sb.Append(Matrix![i, j] + " ");
+                }
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
 }
