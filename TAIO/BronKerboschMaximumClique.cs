@@ -64,8 +64,8 @@ public class BronKerboschMaximumClique
             var xPrim = new HashSet<int>(xSet);
             xPrim.IntersectWith(nSet);
             bronKerbosch(graph, pPrim, rPrim, xPrim);
-            // pSet.Remove(y);
-            // rSet.Add(y);
+            pSet.Remove(y);
+            xSet.Add(y);
         }
     }
 }
