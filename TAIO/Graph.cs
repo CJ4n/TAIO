@@ -1,12 +1,12 @@
 public class Graph {
-        private int VerticesCount { get; set; }
-        private int EdgesCount { get; set; }
-        private int[,]? Matrix { get; set; }
+        public int VerticesCount { get; set; }
+        public int EdgesCount { get; set; }
+        public int[,]? Matrix { get; set; }
 
         // symmetrical matrix of maximal bidirectional subgraph
         private int[,]? BidirectionalMatrix { get; set; }
 
-        private Graph(int verticesCount)
+        public Graph(int verticesCount)
         {
             VerticesCount = verticesCount;
             Matrix = new int[verticesCount, verticesCount];
