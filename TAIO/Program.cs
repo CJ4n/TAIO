@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using TAIO;
-using TAIO.tests;
 
 internal class Program
 {
@@ -8,8 +7,6 @@ internal class Program
     {
          try
          {
-             // Tests
-             // GraphTests.run();
              var graphs = Graph.ParseInputFile("graphs/data1.txt");
              foreach (var g in graphs)
              {
