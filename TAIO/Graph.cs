@@ -16,6 +16,8 @@ public class Graph {
 
         public Graph(int[,] matrix)
         {
+            if (matrix.GetLength(0) != matrix.GetLength(1))
+                throw new ArgumentException("Adjacency matrix has to be a square");
             VerticesCount = matrix.GetLength(0);
             Matrix = matrix;
             EdgesCount = CountEdges();
