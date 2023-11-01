@@ -5,17 +5,17 @@ public class BronKerboschMaximumClique
     // https://eduinf.waw.pl/inf/alg/001_search/0143.php#:~:text=Klika%20maksymalna%20(ang.,clique)%20jest%20najwi%C4%99kszym%20podgrafem%20pe%C5%82nym.
 
     private HashSet<int> rMax;
-    public HashSet<int> solve(Graph graph)
+    public HashSet<int> Solve(Graph graph)
     {
         var pSet = Enumerable.Range(0, graph.VerticesCount).ToHashSet();
         var rSet = new HashSet<int>();
         var xSet = new HashSet<int>();
         rMax = new HashSet<int>();
-        bronKerbosch(graph, pSet, rSet, xSet);
+        BronKerbosch(graph, pSet, rSet, xSet);
         return rMax;
     }
 
-    private void bronKerbosch(Graph graph, HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
+    private void BronKerbosch(Graph graph, HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
     {
         // Helpers.PrintItems(pSet);
         // Helpers.PrintItems(rSet);
@@ -63,7 +63,7 @@ public class BronKerboschMaximumClique
             pPrim.IntersectWith(nSet);
             var xPrim = new HashSet<int>(xSet);
             xPrim.IntersectWith(nSet);
-            bronKerbosch(graph, pPrim, rPrim, xPrim);
+            BronKerbosch(graph, pPrim, rPrim, xPrim);
             pSet.Remove(y);
             xSet.Add(y);
         }

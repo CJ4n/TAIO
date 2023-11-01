@@ -14,6 +14,24 @@ public class Graph {
             Matrix = new int[verticesCount, verticesCount];
         }
 
+        public Graph(int[,] matrix)
+        {
+            VerticesCount = matrix.GetLength(0);
+            Matrix = matrix;
+            EdgesCount = CountEdges();
+            BidirectionalMatrix = RemoveSingularEdges();
+        }
+
+        private int CountEdges()
+        {
+            if (Matrix == null) return 0;
+            return Enumerable.Range(0, Matrix.GetLength(0))
+                .Sum(column => Enumerable.Range(0, Matrix.GetLength(1))
+                .Select(row => Matrix[row, column])
+                .TakeWhile(value => value != 0)
+                .Sum());
+        }
+
         /*
          * Parses an input file into the list of graphs.
          */
@@ -36,7 +54,9 @@ public class Graph {
                         var values = (file.ReadLine()?.Split(' '));
                         for (int j = 0; j < n; j++)
                         {
-                            g.Matrix![i, j] = int.Parse(values![j]);
+                            int edges = int.Parse(values![j]);
+                            g.EdgesCount += edges;
+                            g.Matrix![i, j] = edges;
                         }
                     }
 
@@ -125,8 +145,9 @@ public class Graph {
         public override String ToString()
         {
             if (Matrix == null) return "[]";
-            if(VerticesCount > 50) return $"Graph V:{VerticesCount}, E:{EdgesCount}";
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
+            if (VerticesCount > 50) return sb.ToString();
             for (int i = 0; i < VerticesCount; ++i)
             {
                 for (int j = 0; j < VerticesCount; ++j)
