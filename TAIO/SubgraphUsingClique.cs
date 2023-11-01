@@ -1,15 +1,14 @@
+using System.Collections.Immutable;
+
 namespace TAIO;
 
 public class SubgraphUsingClique
 {
-    public HashSet<(int, int)> Solve(Graph graph1, Graph graph2)
+    public ImmutableSortedSet<(int, int)> Solve(Graph graph1, Graph graph2)
     {
-        Console.WriteLine(graph1);
-        Console.WriteLine(graph2);
         Graph g = ModularProduct(graph1, graph2);
-        Console.WriteLine(g);
         var clique = new BronKerboschMaximumClique().Solve(g);
-        return clique.Select(v => (v / graph2.VerticesCount, v % graph2.VerticesCount)).ToHashSet();
+        return clique.Select(v => (v / graph2.VerticesCount, v % graph2.VerticesCount)).ToImmutableSortedSet();
     }
 
     private Graph ModularProduct(Graph graph1, Graph graph2)

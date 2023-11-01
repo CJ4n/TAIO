@@ -144,21 +144,50 @@ public class Graph {
                 .ToHashSet();
         }
 
+        public void PrintHighlighted(bool[,] hightlightMatrix)
+        {
+            if (Matrix == null)
+            {
+                Console.WriteLine("[]");
+                return;
+            }
+            var color = Console.BackgroundColor;
+            Console.WriteLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
+            for (int i = 0; i < VerticesCount; ++i)
+            {
+                for (int j = 0; j < VerticesCount; ++j)
+                {
+                    if (hightlightMatrix[i,j] == true)
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                    Console.Write(Matrix[i, j] + " ");
+                    Console.BackgroundColor = color;
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public String Serialize()
+        {
+            if (Matrix == null) return "[]";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < VerticesCount; ++i)
+            {
+                for (int j = 0; j < VerticesCount; ++j)
+                {
+                    sb.Append(Matrix[i, j] + " ");
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+
         public override String ToString()
         {
             if (Matrix == null) return "[]";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
             if (VerticesCount > 50) return sb.ToString();
-            for (int i = 0; i < VerticesCount; ++i)
-            {
-                for (int j = 0; j < VerticesCount; ++j)
-                {
-                    sb.Append(Matrix![i, j] + " ");
-                }
-                sb.AppendLine();
-            }
-
+            sb.Append(Serialize());
             return sb.ToString();
         }
 }

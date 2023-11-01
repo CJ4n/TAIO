@@ -1,14 +1,18 @@
+using System.Text;
+
 namespace TAIO;
 
 public static class Helpers
 {
-    public static void PrintItems<T>(IEnumerable<T> es)
+    public static String ItemsToString<T>(IEnumerable<T> es)
     {
-        Console.Write("[");
+        var sb = new StringBuilder();
+        sb.Append('[');
         foreach (var e in es)
         {
-            Console.Write(e + " ");
+            sb.Append(e + " ");
         }
-        Console.WriteLine("]");
+        sb.Append(']');
+        return sb.ToString();
     }
 }

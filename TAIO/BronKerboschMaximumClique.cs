@@ -1,27 +1,28 @@
+using System.Collections.Immutable;
+
 namespace TAIO;
 
 public class BronKerboschMaximumClique
 {
     // https://eduinf.waw.pl/inf/alg/001_search/0143.php#:~:text=Klika%20maksymalna%20(ang.,clique)%20jest%20najwi%C4%99kszym%20podgrafem%20pe%C5%82nym.
 
+    // Klika maksymalna
     private HashSet<int> rMax;
-    public HashSet<int> Solve(Graph graph)
+    public ImmutableSortedSet<int> Solve(Graph graph)
     {
+        // Zbiór wierzchołków, które są kandydatami do rozważenia.
         var pSet = Enumerable.Range(0, graph.VerticesCount).ToHashSet();
+        // Zbiór wierzchołków, które są częściowym wynikiem znajdowania kliki.
         var rSet = new HashSet<int>();
+        // zbiór wierzchołków pominiętych.
         var xSet = new HashSet<int>();
         rMax = new HashSet<int>();
         BronKerbosch(graph, pSet, rSet, xSet);
-        return rMax;
+        return rMax.ToImmutableSortedSet();
     }
 
     private void BronKerbosch(Graph graph, HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
     {
-        // Helpers.PrintItems(pSet);
-        // Helpers.PrintItems(rSet);
-        // Helpers.PrintItems(xSet);
-        // Helpers.PrintItems(rMax);
-        // Console.WriteLine();
         int ncmax;
         if (pSet.Count == 0 && xSet.Count == 0)
         {
