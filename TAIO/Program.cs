@@ -14,8 +14,7 @@ internal class Program
                  var clique = new BronKerboschMaximumClique().solve(g); 
                  Console.Write("Found clique of size " + clique.Count + " with vertices: ");
                  Helpers.PrintItems(clique.ToImmutableSortedSet());
-                 g.Print();
-                 Console.WriteLine();
+                 Console.WriteLine(g);
              }
          } catch(NotImplementedException exception)
          {

@@ -70,28 +70,6 @@ public class Graph {
             g.BidirectionalMatrix = g.RemoveSingularEdges();
             return g;
         }
-        
-        /*
-         * Prints the graph as an adjacency matrix.
-         */
-        public void Print()
-        {
-            for (int i = 0; i < VerticesCount; i++)
-            {
-                for (int j = 0; j < VerticesCount; j++)
-                {
-                    if (Matrix != null)
-                    {
-                        Console.Write(Matrix[i, j] + " ");
-                    }
-                    else
-                    {
-                        Console.WriteLine("[]");
-                    }
-                }
-                Console.WriteLine();
-            }
-        }
 
         /*
          * Removes one-way edges from the graph. Can be used as a preprocessing for finding a clique in graph.
@@ -146,6 +124,8 @@ public class Graph {
 
         public override String ToString()
         {
+            if (Matrix == null) return "[]";
+            if(VerticesCount > 50) return $"Graph V:{VerticesCount}, E:{EdgesCount}";
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < VerticesCount; ++i)
             {
