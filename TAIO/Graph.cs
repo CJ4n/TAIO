@@ -1,118 +1,129 @@
-public class Graph {
-        public int VerticesCount { get; set; }
-        public int EdgesCount { get; set; }
-        public int[,]? Matrix { get; set; }
+public class Graph
+{
+    public int VerticesCount { get; set; }
+    public int EdgesCount { get; set; }
+    public int[,]? Matrix { get; set; }
 
-        // symmetrical matrix of maximal bidirectional subgraph
-        private int[,]? BidirectionalMatrix { get; set; }
+    // symmetrical matrix of maximal bidirectional subgraph
+    private int[,]? BidirectionalMatrix { get; set; }
 
-        public Graph(int verticesCount)
+    public Graph(int verticesCount)
+    {
+        VerticesCount = verticesCount;
+        Matrix = new int[verticesCount, verticesCount];
+    }
+
+    /*
+     * Parses an input file into the list of graphs.
+     */
+    public static List<Graph> ParseInputFile(string pathToFile)
+    {
+        List<Graph> result = new();
+        try
         {
-            VerticesCount = verticesCount;
-            Matrix = new int[verticesCount, verticesCount];
-        }
-
-        /*
-         * Parses an input file into the list of graphs.
-         */
-        public static List<Graph> ParseInputFile(string pathToFile)
-        {
-            List<Graph> result = new();
-            try
+            using var file = new StreamReader(pathToFile);
+            int nGraphs = Convert.ToInt32(file.ReadLine());
+            while (file.ReadLine() is { } ln)
             {
-                using var file = new StreamReader(pathToFile);
-                int nGraphs = Convert.ToInt32(file.ReadLine());
-                while (file.ReadLine() is { } ln) {
-                    if (ln == "")
-                    {
-                        continue;
-                    }
-                    int n = Convert.ToInt32(ln);
-                    Graph g = new Graph(n);
-                    for (int i = 0; i < n; i++)
-                    {
-                        var values = (file.ReadLine()?.Split(' '));
-                        for (int j = 0; j < n; j++)
-                        {
-                            g.Matrix![i, j] = int.Parse(values![j]);
-                        }
-                    }
-
-                    g.BidirectionalMatrix = g.RemoveSingularEdges();
-                    result.Add(g);
-                }
-                file.Close();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"There was a problem with parsing the input file:\n{e}");
-                throw;
-            }
-            return result;
-        }
-
-        /*
-         * Prints the graph as an adjacency matrix.
-         */
-        public void Print()
-        {
-            for (int i = 0; i < VerticesCount; i++)
-            {
-                for (int j = 0; j < VerticesCount; j++)
+                if (ln == "")
                 {
-                    if (Matrix != null)
-                    {
-                        Console.Write(Matrix[i, j] + " ");
-                    }
-                    else
-                    {
-                        Console.WriteLine("[]");
-                    }
+                    continue;
                 }
-                Console.WriteLine();
-            }
-        }
 
-        /*
-         * Removes one-way edges from the graph. Can be used as a preprocessing for finding a clique in graph.
-         */
-        public int[,] RemoveSingularEdges()
-        {
-            if (Matrix == null)
-                throw new Exception("The graph has not been properly initialized\n");
-            
-            int[,] filteredMatrix = new int[VerticesCount,VerticesCount];
-            for (int i = 0; i < VerticesCount; ++i)
-            {
-                for (int j = 0; j < VerticesCount; ++j)
+                int n = Convert.ToInt32(ln);
+                Graph g = new Graph(n);
+                for (int i = 0; i < n; i++)
                 {
-                    filteredMatrix[i, j] = Matrix[i, j] & Matrix[j, i];
+                    var values = (file.ReadLine()?.Split(' '));
+                    for (int j = 0; j < n; j++)
+                    {
+                        g.Matrix![i, j] = int.Parse(values![j]);
+                    }
+                }
+
+                g.BidirectionalMatrix = g.RemoveSingularEdges();
+                result.Add(g);
+            }
+
+            file.Close();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"There was a problem with parsing the input file:\n{e}");
+            throw;
+        }
+
+        return result;
+    }
+
+    /*
+     * Prints the graph as an adjacency matrix.
+     */
+    public void Print()
+    {
+        for (int i = 0; i < VerticesCount; i++)
+        {
+            for (int j = 0; j < VerticesCount; j++)
+            {
+                if (Matrix != null)
+                {
+                    Console.Write(Matrix[i, j] + " ");
+                }
+                else
+                {
+                    Console.WriteLine("[]");
                 }
             }
 
-            return filteredMatrix;
+            Console.WriteLine();
+        }
+    }
+
+    /*
+     * Removes one-way edges from the graph. Can be used as a preprocessing for finding a clique in graph.
+     */
+    public int[,] RemoveSingularEdges()
+    {
+        if (Matrix == null)
+            throw new Exception("The graph has not been properly initialized\n");
+
+        int[,] filteredMatrix = new int[VerticesCount, VerticesCount];
+        for (int i = 0; i < VerticesCount; ++i)
+        {
+            for (int j = 0; j < VerticesCount; ++j)
+            {
+                filteredMatrix[i, j] = Matrix[i, j] & Matrix[j, i];
+            }
         }
 
-        /*
-         * Permutes two vertices index1 and index2
-         */
-        public void Permute(int index1, int index2)
-        {
-            throw new NotImplementedException();
-        }
+        return filteredMatrix;
+    }
 
-        public int GetAt(int column, int row) 
-        {
-            return this.Matrix?[column, row] ?? throw new IndexOutOfRangeException();
-        }
+    /*
+     * Permutes two vertices index1 and index2
+     */
+    public void Permute(int index1, int index2)
+    {
+        throw new NotImplementedException();
+    }
 
-        public int GetAtBidirectional(int column, int row) 
-        {
-            return this.BidirectionalMatrix?[column, row] ?? throw new IndexOutOfRangeException();
-        }
+    public int GetAt(int column, int row)
+    {
+        return this.Matrix?[column, row] ?? throw new IndexOutOfRangeException();
+    }
 
-        public int Size() 
-        {
-            return VerticesCount + EdgesCount;
-        }
+    public int GetAtBidirectional(int column, int row)
+    {
+        return this.BidirectionalMatrix?[column, row] ?? throw new IndexOutOfRangeException();
+    }
+
+    public bool IsBidirectionalEdge(int node1, int node2)
+    {
+        return GetAt(node1, node2) == 1 && GetAt(node2, node1) == 1;
+    }
+
+    public int Size()
+    {
+        return VerticesCount + EdgesCount;
+    }
 }

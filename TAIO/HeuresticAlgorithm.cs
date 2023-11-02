@@ -7,90 +7,142 @@ namespace TAIO;
 
 public class HeuresticAlgorithm
 {
-    private Graph _graph;
+    private Graph _graph { get; }
+    private int _n { get; }
 
     public HeuresticAlgorithm(Graph graph)
     {
         _graph = graph;
+        _n = graph.VerticesCount;
     }
 
-    public void FindClinque(Vector<int> verticesIds)
+    public void ApplyHeuristic(HashSet<int> vertices)
     {
-        Dictionary<int, int> vertices = new Dictionary<int, int>();
-        for (int i = 0; i < verticesIds.Length; i++)
-        {
-            vertices.Add(verticesIds[i], verticesIds[i]);
-        }
-
-        Enlarge(vertices);
+        Relax(vertices);
         Repair(vertices);
+        Extend(vertices);
     }
 
-    private void Enlarge(Dictionary<int, int> vertices)
+    public void Relax(HashSet<int> vertices)
     {
-        int n = _graph.VerticesCount;
-        int numVerticesToAdd = 4;
+        int numVerticesToAdd = _n/3;
         for (int iter = 0; iter < numVerticesToAdd; iter++)
         {
-            int id = new Random().Next(0, n);
-            vertices.Add(id, id);
+            int id = new Random().Next(0, _n);
+            vertices.Add(id);
         }
     }
 
-    private void Repair(Dictionary<int, int> vertices)
+    private bool GetRandomBool()
     {
-        int n = _graph.VerticesCount;
-        int idx = new Random().Next(0, n);
+        return new Random().Next(0, 2) == 0;
+    }
 
-        for (int i = idx; i < n; i++)
+    public void Repair(HashSet<int> vertices)
+    {
+        int idx = new Random().Next(0, _n);
+
+        for (int currentNode = idx; currentNode < _n; currentNode++)
         {
-            if (!vertices.ContainsKey(i))
+            if (!vertices.Contains(currentNode))
             {
                 continue;
             }
 
-            int option = new Random().Next(0, 2);
-            if (option == 0)
+            if (GetRandomBool())
             {
-                vertices.Remove(i);
+                vertices.Remove(currentNode);
             }
-            else
+
+            DeleteNeighborsIfNotConnectedToNode(vertices, currentNode);
+        }
+
+        for (int currentNode = idx - 1; currentNode >= 0; currentNode--)
+        {
+            if (!vertices.Contains(currentNode))
             {
-                for (int j = i + 1; j < n; j++)
-                {
-                    if (!vertices.ContainsKey(j))
-                    {
-                        continue;
-                    }
-
-                    if (0 != _graph.GetAt(j, i))
-                    {
-                        continue;
-                    }
-
-                    vertices.Remove(j);
-                }
-
-                for (int j = 0; j < i-1; j++)
-                {
-                    if (!vertices.ContainsKey(j))
-                    {
-                        continue;
-                    }
-
-                    if (0 != _graph.GetAt(j, i))
-                    {
-                        continue;
-                    }
-
-                    vertices.Remove(j);
-                }
+                continue;
             }
+
+            if (GetRandomBool())
+            {
+                vertices.Remove(currentNode);
+            }
+
+            DeleteNeighborsIfNotConnectedToNode(vertices, currentNode);
         }
     }
 
-    private void Extend()
+    private void DeleteNeighborsIfNotConnectedToNode(HashSet<int> vertices,
+        int node)
     {
-        throw new NotImplementedException();
+        for (int otherNode = node + 1; otherNode < _n; otherNode++)
+        {
+            if (!vertices.Contains(otherNode))
+            {
+                continue;
+            }
+
+            if (_graph.IsBidirectionalEdge(node, otherNode))
+            {
+                continue;
+            }
+
+            vertices.Remove(otherNode);
+        }
+
+        for (int otherNode = 0; otherNode < node - 1; otherNode++)
+        {
+            if (!vertices.Contains(otherNode))
+            {
+                continue;
+            }
+
+            if (_graph.IsBidirectionalEdge(node, otherNode))
+            {
+                continue;
+            }
+
+            vertices.Remove(otherNode);
+        }
+    }
+
+    public void Extend(HashSet<int> vertices)
+    {
+        int idx = new Random().Next(0, _n);
+
+        for (int currentNode = idx; currentNode < _n; currentNode++)
+        {
+            TryExtendCliqueWithGivenNode(vertices, currentNode);
+        }
+
+        for (int currentNode = 0; currentNode < idx; currentNode++)
+        {
+            TryExtendCliqueWithGivenNode(vertices, currentNode);
+        }
+    }
+
+    private void TryExtendCliqueWithGivenNode(HashSet<int> vertices, int currentNode)
+    {
+        bool isConnected = true;
+        foreach (var subgraphNode in vertices)
+        {
+            if (subgraphNode == currentNode)
+            {
+                continue;
+            }
+
+            if (_graph.GetAt(subgraphNode, currentNode) == 0 ||
+                _graph.GetAt(currentNode, subgraphNode) == 0)
+            {
+                isConnected = false;
+                break;
+            }
+        }
+
+        if (isConnected)
+        {
+            vertices.Add(currentNode);
+        }
     }
 }
