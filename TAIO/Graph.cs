@@ -1,5 +1,7 @@
+using System.Text;
+
 public class Graph {
-        private int VerticesCount { get; set; }
+        public int VerticesCount { get; }
         private int EdgesCount { get; set; }
         private int[,]? Matrix { get; set; }
 
@@ -10,6 +12,26 @@ public class Graph {
         {
             VerticesCount = verticesCount;
             Matrix = new int[verticesCount, verticesCount];
+        }
+
+        public Graph(int[,] matrix)
+        {
+            if (matrix.GetLength(0) != matrix.GetLength(1))
+                throw new ArgumentException("Adjacency matrix has to be a square");
+            VerticesCount = matrix.GetLength(0);
+            Matrix = matrix;
+            EdgesCount = CountEdges();
+            BidirectionalMatrix = RemoveSingularEdges();
+        }
+
+        private int CountEdges()
+        {
+            if (Matrix == null) return 0;
+            return Enumerable.Range(0, Matrix.GetLength(0))
+                .Sum(column => Enumerable.Range(0, Matrix.GetLength(1))
+                .Select(row => Matrix[row, column])
+                .TakeWhile(value => value != 0)
+                .Sum());
         }
 
         /*
@@ -34,7 +56,9 @@ public class Graph {
                         var values = (file.ReadLine()?.Split(' '));
                         for (int j = 0; j < n; j++)
                         {
-                            g.Matrix![i, j] = int.Parse(values![j]);
+                            int edges = int.Parse(values![j]);
+                            g.EdgesCount += edges;
+                            g.Matrix![i, j] = edges;
                         }
                     }
 
@@ -52,25 +76,21 @@ public class Graph {
         }
 
         /*
-         * Prints the graph as an adjacency matrix.
+         * Generates random graph
          */
-        public void Print()
+        public static Graph GetRandomGraph(int n)
         {
-            for (int i = 0; i < VerticesCount; i++)
-            {
-                for (int j = 0; j < VerticesCount; j++)
-                {
-                    if (Matrix != null)
-                    {
-                        Console.Write(Matrix[i, j] + " ");
-                    }
+            var r = new Random();
+            Graph g = new Graph(n);
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    if (i == j)
+                        g.Matrix![i, j] = 0;
                     else
-                    {
-                        Console.WriteLine("[]");
-                    }
-                }
-                Console.WriteLine();
-            }
+                        g.Matrix![i, j] = r.Next(0, 2);
+
+            g.BidirectionalMatrix = g.RemoveSingularEdges();
+            return g;
         }
 
         /*
@@ -114,5 +134,60 @@ public class Graph {
         public int Size() 
         {
             return VerticesCount + EdgesCount;
+        }
+
+
+        public HashSet<int> GetNeighboursBi(int v)
+        {
+            return Enumerable.Range(0, BidirectionalMatrix!.GetLength(1))
+                .Where(x => BidirectionalMatrix[v, x] > 0)
+                .ToHashSet();
+        }
+
+        public void PrintHighlighted(bool[,] hightlightMatrix)
+        {
+            if (Matrix == null)
+            {
+                Console.WriteLine("[]");
+                return;
+            }
+            var color = Console.BackgroundColor;
+            Console.WriteLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
+            for (int i = 0; i < VerticesCount; ++i)
+            {
+                for (int j = 0; j < VerticesCount; ++j)
+                {
+                    if (hightlightMatrix[i,j] == true)
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                    Console.Write(Matrix[i, j] + " ");
+                    Console.BackgroundColor = color;
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public String Serialize()
+        {
+            if (Matrix == null) return "[]";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < VerticesCount; ++i)
+            {
+                for (int j = 0; j < VerticesCount; ++j)
+                {
+                    sb.Append(Matrix[i, j] + " ");
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+
+        public override String ToString()
+        {
+            if (Matrix == null) return "[]";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
+            if (VerticesCount > 50) return sb.ToString();
+            sb.Append(Serialize());
+            return sb.ToString();
         }
 }
