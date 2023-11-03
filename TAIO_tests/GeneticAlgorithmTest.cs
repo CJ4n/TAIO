@@ -17,6 +17,21 @@ public class GeneticAlgorithmTest
 
 
     [Test]
+    public void ShouldFindSomeCliqueOnlyCheckingTheBiggestGraph()
+    {
+        foreach (var graph in graphs)
+        {
+            if (graph.VerticesCount < 100)
+            {
+                continue;
+            }
+
+            ShouldFindSomeCliqueWithGeneticAlgorithm(graph);
+        }
+    }
+
+
+    [Test]
     public void ShouldFindSomeCliquesWithGeneticAlgorithm()
     {
         foreach (var graph in graphs)

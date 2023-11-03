@@ -28,7 +28,7 @@ public class GeneticAlgorithm
         ApplyHeuristic();
         while (!TerminationCondition())
         {
-            List<HashSet<int>> selected = Selection();
+            Selection();
             Crossover();
             Mutation();
             ApplyHeuristic();
@@ -85,18 +85,20 @@ public class GeneticAlgorithm
         }
     }
 
-    private List<HashSet<int>> Selection()
+    private void Selection()
     {
         // Implement selection logic, e.g., tournament selection, roulette wheel, etc.
         // For simplicity, let's assume we return a subset of the existing population.
-        return _populations.OrderBy(x => Fitness(x)).Take(_populationSize / 2).ToList();
+
+        _populations = _populations.OrderByDescending(x => Fitness(x)).Take(_populationSize / 2)
+            .ToList();
     }
 
     private void ApplyHeuristic()
     {
         foreach (var population in _populations)
         {
-             _ha.ApplyHeuristic(population);
+            _ha.ApplyHeuristic(population);
         }
     }
 
