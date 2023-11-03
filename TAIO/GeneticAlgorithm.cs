@@ -16,11 +16,29 @@ public class GeneticAlgorithm
         _ha = new HeuresticAlgorithm(graph);
         _graph = graph;
         _n = graph.VerticesCount;
-        _populationSize = _n;
+        _populationSize = 10;
         _maxIterations = 100;
         _mutationRate = 0.05f;
     }
 
+    public HashSet<int> Run()
+    {
+        InitialPopulation();
+
+        ApplyHeuristic();
+        while (!TerminationCondition())
+        {
+            List<HashSet<int>> selected = Selection();
+            Crossover();
+            Mutation();
+            ApplyHeuristic();
+            // Optionally, replace part of the population with the selected ones
+            // to maintain diversity.
+        }
+
+        return _populations.OrderByDescending(Fitness).First();
+        // Post-process the final population to determine the best solution.
+    }
 
     private void Crossover()
     {
@@ -78,7 +96,7 @@ public class GeneticAlgorithm
     {
         foreach (var population in _populations)
         {
-            _ha.ApplyHeuristic(population);
+             _ha.ApplyHeuristic(population);
         }
     }
 
@@ -110,24 +128,5 @@ public class GeneticAlgorithm
 
             _populations.Add(clique);
         }
-    }
-
-    public HashSet<int> Run()
-    {
-        InitialPopulation();
-
-        ApplyHeuristic();
-        while (!TerminationCondition())
-        {
-            List<HashSet<int>> selected = Selection();
-            Crossover();
-            Mutation();
-            ApplyHeuristic();
-            // Optionally, replace part of the population with the selected ones
-            // to maintain diversity.
-        }
-
-        return _populations.OrderByDescending(Fitness).First();
-        // Post-process the final population to determine the best solution.
     }
 }

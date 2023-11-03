@@ -25,7 +25,7 @@ public class HeuresticAlgorithm
 
     public void Relax(HashSet<int> vertices)
     {
-        int numVerticesToAdd = _n/3;
+        int numVerticesToAdd = _n / 3;
         for (int iter = 0; iter < numVerticesToAdd; iter++)
         {
             int id = new Random().Next(0, _n);
