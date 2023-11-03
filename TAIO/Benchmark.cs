@@ -73,6 +73,7 @@ public class Benchmark
         (var cliqueBK, double timeBK) = Timed(() => new BronKerboschMaximumClique().Solve(g));
         (var cliqueGA, double timeGA) = Timed(() => new GeneticAlgorithm().Solve(g));
         if(!SolutionChecker.CheckClique(g, cliqueBK)) throw new SolutionChecker.WrongSolutionException();
+        if(!SolutionChecker.CheckClique(g, cliqueGA)) throw new SolutionChecker.WrongSolutionException();
         cliqueRecords.Add(new CliqueRecord(
                 vertexCount,
                 g.EdgesCount,
