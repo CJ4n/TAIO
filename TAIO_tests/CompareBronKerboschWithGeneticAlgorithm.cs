@@ -23,7 +23,7 @@ public class CompareBronKerboschWithGeneticAlgorithm
         {
             if (graph.VerticesCount > 20)
             {
-                // continue;
+                continue;
             }
 
             GeneticAlgorithm ga = new GeneticAlgorithm(graph);
