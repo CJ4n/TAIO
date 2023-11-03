@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAIO", "TAIO\TAIO.csproj", "{3102128D-D0F2-467A-81EB-D4C10B7721A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAIO_tests", "TAIO_tests\TAIO_tests.csproj", "{1C9A8D34-C16B-4FB6-B608-1D707082B039}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{3102128D-D0F2-467A-81EB-D4C10B7721A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3102128D-D0F2-467A-81EB-D4C10B7721A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3102128D-D0F2-467A-81EB-D4C10B7721A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C9A8D34-C16B-4FB6-B608-1D707082B039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C9A8D34-C16B-4FB6-B608-1D707082B039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C9A8D34-C16B-4FB6-B608-1D707082B039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C9A8D34-C16B-4FB6-B608-1D707082B039}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
