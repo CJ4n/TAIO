@@ -10,15 +10,17 @@ public class GeneticAlgorithm
     private float _mutationRate { get; }
     private int _maxIterations { get; }
     private int _iteraionCounter { get; set; }
+    private int _howManyBestToKeep { get; }
 
     public GeneticAlgorithm(Graph graph)
     {
         _ha = new HeuresticAlgorithm(graph);
         _graph = graph;
         _n = graph.VerticesCount;
-        _populationSize = 10;
+        _populationSize = 50;
         _maxIterations = 100;
         _mutationRate = 0.05f;
+        _howManyBestToKeep = 4;
     }
 
     public HashSet<int> Run()
@@ -29,11 +31,16 @@ public class GeneticAlgorithm
         while (!TerminationCondition())
         {
             Selection();
+            // Save the best solutions before the genetic operations
+            var bestSolutions = _populations.OrderByDescending(Fitness)
+                .Take(_howManyBestToKeep)
+                .Select(solution => new HashSet<int>(solution))
+                .ToList();
             Crossover();
             Mutation();
+
             ApplyHeuristic();
-            // Optionally, replace part of the population with the selected ones
-            // to maintain diversity.
+            _populations.AddRange(bestSolutions);
         }
 
         return _populations.OrderByDescending(Fitness).First();
@@ -45,7 +52,7 @@ public class GeneticAlgorithm
         List<HashSet<int>> newPopulation = new List<HashSet<int>>();
         Random random = new Random();
 
-        while (newPopulation.Count < _populationSize)
+        while (newPopulation.Count < _populationSize - _howManyBestToKeep)
         {
             var parent1 = _populations[random.Next(_populations.Count)];
             var parent2 = _populations[random.Next(_populations.Count)];

@@ -44,7 +44,11 @@ public static class Helpers
     {
         Console.WriteLine(
             $"Found clique of size {clique.Count} with vertices: {Helpers.ItemsToString(clique)} in {time} ms");
-        Helpers.PrintHighlightedClique(g, clique);
+        if (g.VerticesCount < 20)
+        {
+            Helpers.PrintHighlightedClique(g, clique);
+        }
+
         bool isClique = SolutionChecker.CheckClique(g, clique);
         Console.WriteLine("===============================================");
         return isClique;
