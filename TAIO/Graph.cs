@@ -100,7 +100,6 @@ public class Graph
     }
 
 
-
     /*
      * Removes one-way edges from the graph. Can be used as a preprocessing for finding a clique in graph.
      */
