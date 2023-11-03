@@ -4,10 +4,15 @@ namespace TAIO;
 
 public class SubgraphUsingClique
 {
+    private ICliqueAlgorithm _algorithm;
+    public SubgraphUsingClique(ICliqueAlgorithm algorithm)
+    {
+        _algorithm = algorithm;
+    }
     public ImmutableSortedSet<(int, int)> Solve(Graph graph1, Graph graph2)
     {
         Graph g = ModularProduct(graph1, graph2);
-        var clique = new BronKerboschMaximumClique().Solve(g);
+        var clique = _algorithm.Solve(g);
         return clique.Select(v => (v / graph2.VerticesCount, v % graph2.VerticesCount)).ToImmutableSortedSet();
     }
 

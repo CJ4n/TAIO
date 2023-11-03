@@ -84,17 +84,19 @@ public class Graph
     /*
      * Generates random graph
      */
-    public static Graph GetRandomGraph(int n)
+    public static Graph GetRandomGraph(int n, float edgeProbability = 0.5f)
     {
         var r = new Random();
         Graph g = new Graph(n);
         for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
-            if (i == j)
-                g.Matrix![i, j] = 0;
-            else
-                g.Matrix![i, j] = r.Next(0, 2);
-
+            if (i != j && r.NextSingle() <= edgeProbability)
+            {
+                g.EdgesCount++;
+                g.Matrix![i, j] = 1;
+            } 
+            else g.Matrix![i, j] = 0;
+            
         g.BidirectionalMatrix = g.RemoveSingularEdges();
         return g;
     }

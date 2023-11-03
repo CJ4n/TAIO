@@ -18,7 +18,6 @@ public class CompareBronKerboschWithGeneticAlgorithm
     [Test]
     public void CompareBronKerboschWithGeneticAlgorithmTest()
     {
-        BronKerboschMaximumClique bk = new BronKerboschMaximumClique();
         foreach (var graph in graphs)
         {
             if (graph.VerticesCount > 20)
@@ -26,9 +25,10 @@ public class CompareBronKerboschWithGeneticAlgorithm
                 continue;
             }
 
-            GeneticAlgorithm ga = new GeneticAlgorithm(graph);
+            GeneticAlgorithm ga = new GeneticAlgorithm();
+            BronKerboschMaximumClique bk = new BronKerboschMaximumClique();
 
-            (var cliqueGA, var timeGA) = TimedUtils.Timed(() => ga.Run());
+            (var cliqueGA, var timeGA) = TimedUtils.Timed(() => ga.Solve(graph));
             (var cliqueBK, var time2BK) = TimedUtils.Timed(() => bk.Solve(graph));
             Console.WriteLine("------------------------RESULTS------------------------");
             Console.WriteLine(

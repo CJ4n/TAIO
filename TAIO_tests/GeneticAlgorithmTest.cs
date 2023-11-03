@@ -42,8 +42,8 @@ public class GeneticAlgorithmTest
 
     public void ShouldFindSomeCliqueWithGeneticAlgorithm(Graph graph)
     {
-        GeneticAlgorithm ga = new GeneticAlgorithm(graph);
-        (var clique, var time) = TimedUtils.Timed(() => ga.Run());
+        GeneticAlgorithm ga = new GeneticAlgorithm();
+        (var clique, var time) = TimedUtils.Timed(() => ga.Solve(graph));
         Assert.IsTrue(
             Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), time));
     }

@@ -2,32 +2,35 @@ using System.Collections.Immutable;
 
 namespace TAIO;
 
-public class BronKerboschMaximumClique
+public class BronKerboschMaximumClique: ICliqueAlgorithm
 {
     // https://eduinf.waw.pl/inf/alg/001_search/0143.php#:~:text=Klika%20maksymalna%20(ang.,clique)%20jest%20najwi%C4%99kszym%20podgrafem%20pe%C5%82nym.
 
+    private Graph _graph;
     // Klika maksymalna
-    private HashSet<int> rMax;
+    private HashSet<int> _rMax;
+
     public ImmutableSortedSet<int> Solve(Graph graph)
     {
+        _graph = graph;
         // Zbiór wierzchołków, które są kandydatami do rozważenia.
         var pSet = Enumerable.Range(0, graph.VerticesCount).ToHashSet();
         // Zbiór wierzchołków, które są częściowym wynikiem znajdowania kliki.
         var rSet = new HashSet<int>();
         // zbiór wierzchołków pominiętych.
         var xSet = new HashSet<int>();
-        rMax = new HashSet<int>();
-        BronKerbosch(graph, pSet, rSet, xSet);
-        return rMax.ToImmutableSortedSet();
+        _rMax = new HashSet<int>();
+        BronKerbosch(pSet, rSet, xSet);
+        return _rMax.ToImmutableSortedSet();
     }
 
-    private void BronKerbosch(Graph graph, HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
+    private void BronKerbosch(HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
     {
         int ncmax;
         if (pSet.Count == 0 && xSet.Count == 0)
         {
-            if (rSet.Count > rMax.Count)
-                rMax = rSet;
+            if (rSet.Count > _rMax.Count)
+                _rMax = rSet;
             return;
         }
         var pBis = new HashSet<int>();
@@ -39,7 +42,7 @@ public class BronKerboschMaximumClique
         foreach (int u in pBis)
         {
             int nc = 0;
-            foreach (int w in graph.GetNeighboursBi(u))
+            foreach (int w in _graph.GetNeighboursBi(u))
                 if (pSet.Contains(w))
                     nc++;
             if (nc >= ncmax)
@@ -51,12 +54,12 @@ public class BronKerboschMaximumClique
 
         pBis = new HashSet<int>();
         pBis.UnionWith(pSet);
-        var vNeighs = graph.GetNeighboursBi(v);
+        var vNeighs = _graph.GetNeighboursBi(v);
         pBis.ExceptWith(vNeighs);
         foreach (int y in pBis)
         {
             var nSet = new HashSet<int>();
-            nSet.UnionWith(graph.GetNeighboursBi(y));
+            nSet.UnionWith(_graph.GetNeighboursBi(y));
             var rPrim = new HashSet<int>();
             rPrim.UnionWith(rSet);
             rPrim.Add(y);
@@ -64,7 +67,7 @@ public class BronKerboschMaximumClique
             pPrim.IntersectWith(nSet);
             var xPrim = new HashSet<int>(xSet);
             xPrim.IntersectWith(nSet);
-            BronKerbosch(graph, pPrim, rPrim, xPrim);
+            BronKerbosch(pPrim, rPrim, xPrim);
             pSet.Remove(y);
             xSet.Add(y);
         }

@@ -1,10 +1,12 @@
-﻿namespace TAIO;
+﻿using System.Collections.Immutable;
+
+namespace TAIO;
 
 public class GeneticAlgorithm
 {
-    private Graph _graph { get; }
-    private int _n { get; }
-    private HeuresticAlgorithm _ha { get; }
+    private Graph _graph;
+    private int _n;
+    private HeuresticAlgorithm _ha;
     private int _populationSize { get; }
     private List<HashSet<int>> _populations { get; set; }
     private float _mutationRate { get; }
@@ -12,19 +14,17 @@ public class GeneticAlgorithm
     private int _iteraionCounter { get; set; }
     private int _howManyBestToKeep { get; }
 
-    public GeneticAlgorithm(Graph graph)
+    public GeneticAlgorithm()
     {
-        _ha = new HeuresticAlgorithm(graph);
-        _graph = graph;
-        _n = graph.VerticesCount;
         _populationSize = 50;
         _maxIterations = 100;
         _mutationRate = 0.05f;
         _howManyBestToKeep = 4;
     }
 
-    public HashSet<int> Run()
+    public ImmutableSortedSet<int> Solve(Graph graph)
     {
+        InitializeAlgorithm(graph);
         InitialPopulation();
 
         ApplyHeuristic();
@@ -43,8 +43,15 @@ public class GeneticAlgorithm
             _populations.AddRange(bestSolutions);
         }
 
-        return _populations.OrderByDescending(Fitness).First();
+        return _populations.OrderByDescending(Fitness).First().ToImmutableSortedSet();
         // Post-process the final population to determine the best solution.
+    }
+
+    private void InitializeAlgorithm(Graph graph)
+    {
+        _ha = new HeuresticAlgorithm(graph);
+        _graph = graph;
+        _n = graph.VerticesCount;
     }
 
     private void Crossover()
