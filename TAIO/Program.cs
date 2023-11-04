@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using TAIO;
+﻿using TAIO;
 using TAIO_tests;
 
 internal class Program
@@ -8,16 +7,30 @@ internal class Program
     {
         try
         {
-            
-            Benchmark.RunFullCliqueBenchmark();
+            Benchmark.RunFullApproximationBenchmark();
+            // Benchmark.RunFullCliqueBenchmark();
+            // Benchmark.RunFullSubgraphBenchmark();
             // GraphGenerator.generateGraphsToFile(new[]{30, 30}, "graphs/data4.txt");
-            //ExactCliques(Graph.ParseInputFile("graphs/data2.txt"));
+            // ExactCliques(Graph.ParseInputFile("graphs/data2.txt"));
             // ExactSubgraphs(Graph.ParseInputFile("graphs/data4.txt"));
+            // ApproximatedCliques();
         }
         catch (NotImplementedException exception)
         {
             Console.WriteLine(exception);
         }
+    }
+
+    private static void ApproximatedCliques()
+    {
+        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
+        TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
+
+        Graph g = Graph.GetRandomGraphWithCliques(new List<int> { 100, 101, 104}, 1000, 0.7f);
+        (var clique, double time) =
+            TimedUtils.Timed(() => new GeneticAlgorithm().Solve(g));
+        Helpers.EvaluateSolutionForCliqueProblem(g, clique, time);
+        
     }
 
     private static void ExactSubgraphs(List<Graph> graphs)

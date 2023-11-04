@@ -2,7 +2,7 @@
 
 namespace TAIO;
 
-public class GeneticAlgorithm
+public class GeneticAlgorithm: ICliqueAlgorithm
 {
     private Graph _graph;
     private int _n;

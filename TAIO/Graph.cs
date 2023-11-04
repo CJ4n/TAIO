@@ -100,7 +100,40 @@ public class Graph
         g.BidirectionalMatrix = g.RemoveSingularEdges();
         return g;
     }
+    
+    /*
+     * Generates random graph with certain number of cliques
+     */
+    public static Graph GetRandomGraphWithCliques(List<int> cliqueSizes, int n, float edgeProbability = 0.5f)
+    {
+        var r = new Random();
+        Graph g = new Graph(n);
+        for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (i != j && r.NextSingle() <= edgeProbability)
+            {
+                g.EdgesCount++;
+                g.Matrix![i, j] = 1;
+            } 
+            else g.Matrix![i, j] = 0;
 
+        foreach (int clique in cliqueSizes)
+        {
+            var vertices = Enumerable.Range(0, n).OrderBy(x => r.Next()).Take(clique).ToList();
+            foreach (int i in vertices)
+            foreach (int j in vertices)
+            {
+                if (i != j)
+                {
+                    if(g.Matrix![i, j] == 0)
+                        g.EdgesCount++;
+                    g.Matrix![i, j] = 1;
+                }
+            }
+        }
+        g.BidirectionalMatrix = g.RemoveSingularEdges();
+        return g;
+    }
 
     /*
      * Removes one-way edges from the graph. Can be used as a preprocessing for finding a clique in graph.
