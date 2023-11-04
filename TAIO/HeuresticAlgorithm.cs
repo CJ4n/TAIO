@@ -52,8 +52,8 @@ public class HeuresticAlgorithm
             if (GetRandomBool())
             {
                 vertices.Remove(currentNode);
+                continue;
             }
-
             DeleteNeighborsIfNotConnectedToNode(vertices, currentNode);
         }
 
@@ -67,8 +67,8 @@ public class HeuresticAlgorithm
             if (GetRandomBool())
             {
                 vertices.Remove(currentNode);
+                continue;
             }
-
             DeleteNeighborsIfNotConnectedToNode(vertices, currentNode);
         }
     }
