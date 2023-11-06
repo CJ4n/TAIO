@@ -7,20 +7,12 @@ public class GeneticAlgorithm
     private Graph _graph;
     private int _n;
     private HeuresticAlgorithm _ha;
-    private int _populationSize { get; }
+    private int _populationSize { get; set; } = 50;
     private List<HashSet<int>> _populations { get; set; }
-    private float _mutationRate { get; }
-    private int _maxIterations { get; }
+    private float _mutationRate { get; } = 0.05f;
+    private int _maxIterations { get; } = 200;
     private int _iteraionCounter { get; set; }
-    private int _howManyBestToKeep { get; }
-
-    public GeneticAlgorithm()
-    {
-        _populationSize = 50;
-        _maxIterations = 100;
-        _mutationRate = 0.05f;
-        _howManyBestToKeep = 4;
-    }
+    private int _howManyBestToKeep { get; } = 4;
 
     public ImmutableSortedSet<int> Solve(Graph graph)
     {
@@ -52,6 +44,7 @@ public class GeneticAlgorithm
         _ha = new HeuresticAlgorithm(graph);
         _graph = graph;
         _n = graph.VerticesCount;
+        _populationSize = Math.Max(50, graph.VerticesCount / 3);
     }
 
     private void Crossover()
