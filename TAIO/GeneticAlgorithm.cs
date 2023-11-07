@@ -2,7 +2,7 @@
 
 namespace TAIO;
 
-public class GeneticAlgorithm
+public class GeneticAlgorithm : ICliqueAlgorithm
 {
     private Graph _graph;
     private int _n;
@@ -14,7 +14,7 @@ public class GeneticAlgorithm
     private int _iteraionCounter { get; set; }
     private int _howManyBestToKeep { get; } = 4;
 
-    public ImmutableSortedSet<int> Solve(Graph graph)
+    public (ImmutableSortedSet<int>, int) Solve(Graph graph)
     {
         InitializeAlgorithm(graph);
         InitialPopulation();
@@ -35,8 +35,24 @@ public class GeneticAlgorithm
             _populations.AddRange(bestSolutions);
         }
 
-        return _populations.OrderByDescending(Fitness).First().ToImmutableSortedSet();
-        // Post-process the final population to determine the best solution.
+        int minNumEdgesBetweenNodes =
+            int.MaxValue; // minimal number of egdes between nodes in mulitgprah 
+        var solutoin = _populations.OrderByDescending(Fitness).First().ToImmutableSortedSet();
+        foreach (var node1 in solutoin)
+        {
+            foreach (var node2 in solutoin)
+            {
+                if (node1 == node2)
+                {
+                    continue;
+                }
+
+                minNumEdgesBetweenNodes = Math.Min(minNumEdgesBetweenNodes,
+                    _graph.GetAtBidirectional(node1, node2));
+            }
+        }
+
+        return (solutoin, minNumEdgesBetweenNodes);
     }
 
     private void InitializeAlgorithm(Graph graph)
