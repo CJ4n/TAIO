@@ -142,7 +142,7 @@ public class Graph
 
     public bool IsBidirectionalEdge(int node1, int node2)
     {
-        return GetAt(node1, node2) == 1 && GetAt(node2, node1) == 1;
+        return this.GetAtBidirectional(node1,node2) >0;
     }
 
     public int Size()

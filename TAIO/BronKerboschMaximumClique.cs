@@ -2,15 +2,16 @@ using System.Collections.Immutable;
 
 namespace TAIO;
 
-public class BronKerboschMaximumClique: ICliqueAlgorithm
+public class BronKerboschMaximumClique : ICliqueAlgorithm
 {
     // https://eduinf.waw.pl/inf/alg/001_search/0143.php#:~:text=Klika%20maksymalna%20(ang.,clique)%20jest%20najwi%C4%99kszym%20podgrafem%20pe%C5%82nym.
 
     private Graph _graph;
+
     // Klika maksymalna
     private HashSet<int> _rMax;
 
-    public ImmutableSortedSet<int> Solve(Graph graph)
+    public (ImmutableSortedSet<int>, int) Solve(Graph graph)
     {
         _graph = graph;
         // Zbiór wierzchołków, które są kandydatami do rozważenia.
@@ -21,7 +22,23 @@ public class BronKerboschMaximumClique: ICliqueAlgorithm
         var xSet = new HashSet<int>();
         _rMax = new HashSet<int>();
         BronKerbosch(pSet, rSet, xSet);
-        return _rMax.ToImmutableSortedSet();
+        int minNumEdgesBetweenNodes =
+            int.MaxValue; // minimal number of egdes between nodes in mulitgprah 
+        foreach (var node1 in _rMax)
+        {
+            foreach (var node2 in _rMax)
+            {
+                if (node1 == node2)
+                {
+                    continue;
+                }
+
+                minNumEdgesBetweenNodes = Math.Min(minNumEdgesBetweenNodes,
+                    _graph.GetAtBidirectional(node1, node2));
+            }
+        }
+
+        return (_rMax.ToImmutableSortedSet(), minNumEdgesBetweenNodes);
     }
 
     private void BronKerbosch(HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
@@ -33,6 +50,7 @@ public class BronKerboschMaximumClique: ICliqueAlgorithm
                 _rMax = rSet;
             return;
         }
+
         var pBis = new HashSet<int>();
         pBis.UnionWith(pSet);
         pBis.UnionWith(xSet);

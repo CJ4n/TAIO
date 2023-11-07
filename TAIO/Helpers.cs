@@ -40,16 +40,17 @@ public static class Helpers
 
 
     public static bool EvaluateSolutionForCliqueProblem(Graph g, ImmutableSortedSet<int> clique,
+        int L,
         double time)
     {
         Console.WriteLine(
-            $"Found clique of size {clique.Count} with vertices: {Helpers.ItemsToString(clique)} in {time} ms");
+            $"Found clique of size {clique.Count} of thickness {L} with vertices: {Helpers.ItemsToString(clique)} in {time} ms");
         if (g.VerticesCount < 20)
         {
             Helpers.PrintHighlightedClique(g, clique);
         }
 
-        bool isClique = SolutionChecker.CheckClique(g, clique);
+        bool isClique = SolutionChecker.CheckClique(g, clique,L);
         Console.WriteLine("===============================================");
         return isClique;
     }

@@ -4,5 +4,5 @@ namespace TAIO;
 
 public interface ICliqueAlgorithm
 {
-    public ImmutableSortedSet<int> Solve(Graph graph);
+    public (ImmutableSortedSet<int>,int) Solve(Graph graph);
 }

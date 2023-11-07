@@ -18,7 +18,9 @@ public class Benchmark
         public double BronKerboschTime { get; set; }
         public double GeneticAlgorithmTime { get; set; }
 
-        public CliqueRecord(int vertexCount, int edgeCount, int maximumCliqueSize, int maximumCliqueApproximationSize, int approximationError, double bronKerboschTime, double geneticAlgorithmTime)
+        public CliqueRecord(int vertexCount, int edgeCount, int maximumCliqueSize,
+            int maximumCliqueApproximationSize, int approximationError, double bronKerboschTime,
+            double geneticAlgorithmTime)
         {
             VertexCount = vertexCount;
             EdgeCount = edgeCount;
@@ -29,7 +31,7 @@ public class Benchmark
             ApproximationError = approximationError;
         }
     }
-    
+
     private class CliqueRecordMap : ClassMap<CliqueRecord>
     {
         public CliqueRecordMap()
@@ -41,7 +43,6 @@ public class Benchmark
             Map(m => m.ApproximationError).Index(0).Name("error");
             Map(m => m.BronKerboschTime).Index(0).Name("ExactTimeKB");
             Map(m => m.GeneticAlgorithmTime).Index(0).Name("ApproxTimeGA");
-
         }
     }
 
@@ -52,17 +53,18 @@ public class Benchmark
 
         List<CliqueRecord> cliqueRecords = new();
         int sampleSize = 1;
-        List<int> verticesCounts = new List<int>{10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-        List<float> edgeProbabilities = new List<float> {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
-        
+        List<int> verticesCounts = new List<int> { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
+        List<float> edgeProbabilities = new List<float>
+            { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
+
         foreach (int verticesCount in verticesCounts)
         foreach (float edgeProbability in edgeProbabilities)
             for (int i = 0; i < sampleSize; i++)
             {
                 cliqueRecords.AddRange(RunCliqueBenchmark(verticesCount, edgeProbability));
-                Console.WriteLine($"Done: V:{verticesCount}, EP:{edgeProbability}, no.{i+1}");
+                Console.WriteLine($"Done: V:{verticesCount}, EP:{edgeProbability}, no.{i + 1}");
             }
-        
+
         saveBenchmark(cliqueRecords);
     }
 
@@ -70,19 +72,22 @@ public class Benchmark
     {
         List<CliqueRecord> cliqueRecords = new();
         Graph g = Graph.GetRandomGraph(vertexCount, edgeProbability);
-        (var cliqueBK, double timeBK) = Timed(() => new BronKerboschMaximumClique().Solve(g));
-        (var cliqueGA, double timeGA) = Timed(() => new GeneticAlgorithm().Solve(g));
-        if(!SolutionChecker.CheckClique(g, cliqueBK)) throw new SolutionChecker.WrongSolutionException();
-        if(!SolutionChecker.CheckClique(g, cliqueGA)) throw new SolutionChecker.WrongSolutionException();
+        ((var cliqueBK, var LBK), double timeBK) =
+            Timed(() => new BronKerboschMaximumClique().Solve(g));
+        ((var cliqueGA, var LGA), double timeGA) = Timed(() => new GeneticAlgorithm().Solve(g));
+        if (!SolutionChecker.CheckClique(g, cliqueBK, LBK))
+            throw new SolutionChecker.WrongSolutionException();
+        if (!SolutionChecker.CheckClique(g, cliqueGA, LGA))
+            throw new SolutionChecker.WrongSolutionException();
         cliqueRecords.Add(new CliqueRecord(
-                vertexCount,
-                g.EdgesCount,
-                cliqueBK.Count,
-                cliqueGA.Count,
-                cliqueBK.Count - cliqueGA.Count,
-                timeBK,
-                timeGA
-                ));
+            vertexCount,
+            g.EdgesCount,
+            cliqueBK.Count,
+            cliqueGA.Count,
+            cliqueBK.Count - cliqueGA.Count,
+            timeBK,
+            timeGA
+        ));
         return cliqueRecords;
     }
 
@@ -98,6 +103,7 @@ public class Benchmark
             csv.WriteRecords(cliqueRecords);
             csv.Flush();
         }
+
         Console.WriteLine("Saved to " + path);
     }
 }

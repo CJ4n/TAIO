@@ -12,7 +12,7 @@ public class SubgraphUsingClique
     public ImmutableSortedSet<(int, int)> Solve(Graph graph1, Graph graph2)
     {
         Graph g = ModularProduct(graph1, graph2);
-        var clique = _algorithm.Solve(g);
+        (var clique, var L) = _algorithm.Solve(g);
         return clique.Select(v => (v / graph2.VerticesCount, v % graph2.VerticesCount)).ToImmutableSortedSet();
     }
 

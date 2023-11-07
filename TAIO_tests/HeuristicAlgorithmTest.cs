@@ -28,14 +28,15 @@ public class Tests
         var ha = new HeuresticAlgorithm(graph);
         HashSet<int> vertices = Utils.PrepareVertices(graph);
 
-        (var clique, var time) = TimedUtils.Timed(() =>
+        ((var clique, var L), var time) = TimedUtils.Timed(() =>
         {
             ha.Repair(vertices);
-            return vertices;
+            return (vertices.ToImmutableSortedSet(), 1);
         });
 
         Assert.IsTrue(
-            Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), time));
+            Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), L,
+                time));
     }
 
     [Test]
@@ -52,15 +53,16 @@ public class Tests
         var ha = new HeuresticAlgorithm(graph);
 
         HashSet<int> vertices = Utils.PrepareVertices(graph);
-        (var clique, var time) = TimedUtils.Timed(() =>
+        ((var clique, var L), var time) = TimedUtils.Timed(() =>
         {
             ha.Repair(vertices);
             ha.Extend(vertices);
-            return vertices;
+            return (vertices.ToImmutableSortedSet(), 1);
         });
 
         Assert.IsTrue(
-            Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), time));
+            Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), L,
+                time));
     }
 
     [Test]
@@ -78,12 +80,13 @@ public class Tests
 
         HashSet<int> vertices = Utils.PrepareVertices(graph);
 
-        (var clique, var time) = TimedUtils.Timed(() =>
+        ((var clique, var L), var time) = TimedUtils.Timed(() =>
         {
             ha.ApplyHeuristic(vertices);
-            return vertices;
+            return (vertices.ToImmutableSortedSet(), 1);
         });
         Assert.IsTrue(
-            Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), time));
+            Helpers.EvaluateSolutionForCliqueProblem(graph, clique.ToImmutableSortedSet(), L,
+                time));
     }
 }
