@@ -37,7 +37,8 @@ internal class Program
     {
         // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
         TimedUtils.Timed(() =>
-            new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(new Graph(new int[1, 1]), new Graph(new int[1, 1])));
+            new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(new Graph(new int[1, 1]),
+                new Graph(new int[1, 1])));
 
         for (int i = 0; i < graphs.Count; i++)
         for (int j = i + 1; j < graphs.Count; j++)
@@ -45,7 +46,8 @@ internal class Program
             var g1 = graphs[i];
             var g2 = graphs[j];
             (var subgraph, double time) =
-                TimedUtils.Timed(() => new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(g1, g2));
+                TimedUtils.Timed(() =>
+                    new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(g1, g2));
             Console.WriteLine(
                 $"Found subgraph of size {subgraph.Count} with vertices mapping: {Helpers.ItemsToString(subgraph)} in {time} ms");
             Helpers.PrintHighlightedSubgraph(g1, subgraph, 0);
@@ -64,9 +66,9 @@ internal class Program
 
         foreach (var g in graphs)
         {
-            (var clique, double time) =
+            ((var clique, var L), double time) =
                 TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(g));
-            Helpers.EvaluateSolutionForCliqueProblem(g, clique, time);
+            Helpers.EvaluateSolutionForCliqueProblem(g, clique, L, time);
         }
     }
 }

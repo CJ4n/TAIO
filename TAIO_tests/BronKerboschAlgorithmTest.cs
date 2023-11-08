@@ -29,8 +29,8 @@ public class BronKerboschAlgorithmTest
     {
         BronKerboschMaximumClique bk = new BronKerboschMaximumClique();
 
-        (var clique, var time) = TimedUtils.Timed(() => bk.Solve(graph));
+        ((var clique, var L), var time) = TimedUtils.Timed(() => bk.Solve(graph));
         Assert.IsTrue(
-            Helpers.EvaluateSolutionForCliqueProblem(graph, clique, time));
+            Helpers.EvaluateSolutionForCliqueProblem(graph, clique, L, time));
     }
 }

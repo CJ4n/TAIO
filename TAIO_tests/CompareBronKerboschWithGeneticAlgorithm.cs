@@ -28,8 +28,9 @@ public class CompareBronKerboschWithGeneticAlgorithm
             GeneticAlgorithm ga = new GeneticAlgorithm();
             BronKerboschMaximumClique bk = new BronKerboschMaximumClique();
 
-            (var cliqueGA, var timeGA) = TimedUtils.Timed(() => ga.Solve(graph));
-            (var cliqueBK, var time2BK) = TimedUtils.Timed(() => bk.Solve(graph));
+            var res = ga.Solve(graph);
+            ((var cliqueGA, var LGA), var timeGA) = TimedUtils.Timed(() => ga.Solve(graph));
+            ((var cliqueBK, var LBK), var time2BK) = TimedUtils.Timed(() => bk.Solve(graph));
             Console.WriteLine("------------------------RESULTS------------------------");
             Console.WriteLine(
                 $"Genetic algorithm found clique of size: {cliqueGA.Count} in time: {timeGA} ");
@@ -39,15 +40,21 @@ public class CompareBronKerboschWithGeneticAlgorithm
             {
                 Console.WriteLine(
                     "+++++++++++++++++++++++++++++++++++++++Clique sizes are different!+++++++++++++++++++++++++++++++++++++++");
+                if (LGA != LBK)
+                {
+                    Console.WriteLine(
+                        "+++++++++++++++++++++++++++++++++++++++ Cliques of different thickness!+++++++++++++++++++++++++++++++++++++++");
+                }
             }
+
 
             Console.WriteLine(
                 "----------------GENETIC ALGORITHM----------------");
-            Helpers.EvaluateSolutionForCliqueProblem(graph, cliqueGA.ToImmutableSortedSet(),
+            Helpers.EvaluateSolutionForCliqueProblem(graph, cliqueGA.ToImmutableSortedSet(), LGA,
                 timeGA);
             Console.WriteLine(
                 "----------------BRON KERBOSH---------------");
-            Helpers.EvaluateSolutionForCliqueProblem(graph, cliqueBK.ToImmutableSortedSet(),
+            Helpers.EvaluateSolutionForCliqueProblem(graph, cliqueBK.ToImmutableSortedSet(), LBK,
                 time2BK);
         }
     }

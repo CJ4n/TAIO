@@ -1,12 +1,15 @@
 namespace TAIO;
 
+using System.Collections.Immutable;
+
 public abstract class TimedUtils
 {
-    public static (T, double) Timed<T>(Func<T> func)
+    public static (T, double) Timed<T>(
+        Func<T> func)
     {
         var watch = System.Diagnostics.Stopwatch.StartNew();
-        T result = func.Invoke();
+        T res  = func.Invoke();
         watch.Stop();
-        return (result, watch.Elapsed.TotalMilliseconds);
+        return (res, watch.Elapsed.TotalMilliseconds);
     }
 }

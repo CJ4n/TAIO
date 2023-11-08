@@ -2,27 +2,19 @@
 
 namespace TAIO;
 
-public class GeneticAlgorithm: ICliqueAlgorithm
+public class GeneticAlgorithm : ICliqueAlgorithm
 {
     private Graph _graph;
     private int _n;
     private HeuresticAlgorithm _ha;
-    private int _populationSize { get; }
+    private int _populationSize { get; set; } = 50;
     private List<HashSet<int>> _populations { get; set; }
-    private float _mutationRate { get; }
-    private int _maxIterations { get; }
+    private float _mutationRate { get; } = 0.05f;
+    private int _maxIterations { get; } = 200;
     private int _iteraionCounter { get; set; }
-    private int _howManyBestToKeep { get; }
+    private int _howManyBestToKeep { get; } = 4;
 
-    public GeneticAlgorithm()
-    {
-        _populationSize = 50;
-        _maxIterations = 100;
-        _mutationRate = 0.05f;
-        _howManyBestToKeep = 4;
-    }
-
-    public ImmutableSortedSet<int> Solve(Graph graph)
+    public (ImmutableSortedSet<int>, int) Solve(Graph graph)
     {
         InitializeAlgorithm(graph);
         InitialPopulation();
@@ -43,8 +35,24 @@ public class GeneticAlgorithm: ICliqueAlgorithm
             _populations.AddRange(bestSolutions);
         }
 
-        return _populations.OrderByDescending(Fitness).First().ToImmutableSortedSet();
-        // Post-process the final population to determine the best solution.
+        int minNumEdgesBetweenNodes =
+            int.MaxValue; // minimal number of egdes between nodes in mulitgprah 
+        var solutoin = _populations.OrderByDescending(Fitness).First().ToImmutableSortedSet();
+        foreach (var node1 in solutoin)
+        {
+            foreach (var node2 in solutoin)
+            {
+                if (node1 == node2)
+                {
+                    continue;
+                }
+
+                minNumEdgesBetweenNodes = Math.Min(minNumEdgesBetweenNodes,
+                    _graph.GetAtBidirectional(node1, node2));
+            }
+        }
+
+        return (solutoin, minNumEdgesBetweenNodes);
     }
 
     private void InitializeAlgorithm(Graph graph)
@@ -52,6 +60,7 @@ public class GeneticAlgorithm: ICliqueAlgorithm
         _ha = new HeuresticAlgorithm(graph);
         _graph = graph;
         _n = graph.VerticesCount;
+        _populationSize = Math.Max(50, graph.VerticesCount / 3);
     }
 
     private void Crossover()
