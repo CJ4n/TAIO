@@ -101,11 +101,13 @@ public class Benchmark
         Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
 
         List<ApproxRecord> approxRecords = new();
-        int sampleSize = 10;
-        List<int> verticesCounts = new List<int>{100, 500, 1000, 2000, 3000};
-        List<int> cliqueCounts = new List<int>{20, 50, 100, 300, 500, 1000};
-        List<float> edgeProbabilities = new List<float> {0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f };
-
+        int sampleSize = 5;
+        // List<int> verticesCounts = new List<int>{100, 500, 1000, 2000, 3000};
+        // List<int> cliqueCounts = new List<int>{20, 50, 100, 300, 500, 1000};
+        // List<float> edgeProbabilities = new List<float> {0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f };
+        List<int> verticesCounts = new List<int>{1000};
+        List<int> cliqueCounts = new List<int>{20, 50, 100, 300};
+        List<float> edgeProbabilities = new List<float> {0.8f, 0.9f };
         foreach (int verticesCount in verticesCounts)
         foreach (int cliqueCount in cliqueCounts.Where(cliqueCount => cliqueCount < verticesCount))
         foreach (var edgeProbability in edgeProbabilities)

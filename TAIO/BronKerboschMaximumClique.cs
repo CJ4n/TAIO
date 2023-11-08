@@ -10,6 +10,7 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
 
     // Klika maksymalna
     private HashSet<int> _rMax;
+    private int _maxEdge;
 
     public (ImmutableSortedSet<int>, int) Solve(Graph graph)
     {
@@ -21,33 +22,21 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
         // zbiór wierzchołków pominiętych.
         var xSet = new HashSet<int>();
         _rMax = new HashSet<int>();
-        BronKerbosch(pSet, rSet, xSet);
-        int minNumEdgesBetweenNodes =
-            int.MaxValue; // minimal number of egdes between nodes in mulitgprah 
-        foreach (var node1 in _rMax)
-        {
-            foreach (var node2 in _rMax)
-            {
-                if (node1 == node2)
-                {
-                    continue;
-                }
-
-                minNumEdgesBetweenNodes = Math.Min(minNumEdgesBetweenNodes,
-                    _graph.GetAtBidirectional(node1, node2));
-            }
-        }
-
-        return (_rMax.ToImmutableSortedSet(), minNumEdgesBetweenNodes);
+        _maxEdge = 0;
+        BronKerbosch(pSet, rSet, xSet, 0);
+        return (_rMax.ToImmutableSortedSet(), _maxEdge);
     }
 
-    private void BronKerbosch(HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet)
+    private void BronKerbosch(HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet, int edgeCount) // TODO add to theory
     {
-        int ncmax;
+        int ncmax, edges;
         if (pSet.Count == 0 && xSet.Count == 0)
         {
-            if (rSet.Count > _rMax.Count)
+            if (rSet.Count > _rMax.Count || (rSet.Count == _rMax.Count && edgeCount >= _maxEdge))
+            {
                 _rMax = rSet;
+                _maxEdge = edgeCount;
+            }
             return;
         }
 
@@ -76,6 +65,8 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
         pBis.ExceptWith(vNeighs);
         foreach (int y in pBis)
         {
+            int yEdges = rSet.Count != 0? rSet.Min(r=>_graph.GetAtBidirectional(r, y)): 0;
+            edges = edgeCount == 0 || yEdges < edgeCount ? yEdges : edgeCount;
             var nSet = new HashSet<int>();
             nSet.UnionWith(_graph.GetNeighboursBi(y));
             var rPrim = new HashSet<int>();
@@ -85,7 +76,7 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
             pPrim.IntersectWith(nSet);
             var xPrim = new HashSet<int>(xSet);
             xPrim.IntersectWith(nSet);
-            BronKerbosch(pPrim, rPrim, xPrim);
+            BronKerbosch(pPrim, rPrim, xPrim, edges);
             pSet.Remove(y);
             xSet.Add(y);
         }

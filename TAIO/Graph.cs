@@ -148,7 +148,7 @@ public class Graph
         {
             for (int j = 0; j < VerticesCount; ++j)
             {
-                filteredMatrix[i, j] = Matrix[i, j] & Matrix[j, i];
+                filteredMatrix[i, j] = Math.Min(Matrix[i, j], Matrix[j, i]);
             }
         }
 
@@ -200,15 +200,20 @@ public class Graph
         }
 
         var color = Console.BackgroundColor;
+        var fontColor = Console.ForegroundColor;
         Console.WriteLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
         for (int i = 0; i < VerticesCount; ++i)
         {
             for (int j = 0; j < VerticesCount; ++j)
             {
                 if (hightlightMatrix[i, j] == true)
-                    Console.BackgroundColor = ConsoleColor.DarkGray;
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                };
                 Console.Write(Matrix[i, j] + " ");
                 Console.BackgroundColor = color;
+                Console.ForegroundColor = fontColor;
             }
 
             Console.WriteLine();

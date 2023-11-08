@@ -45,7 +45,7 @@ public static class Helpers
     {
         Console.WriteLine(
             $"Found clique of size {clique.Count} of thickness {L} with vertices: {Helpers.ItemsToString(clique)} in {time} ms");
-        if (g.VerticesCount < 20)
+        if (g.VerticesCount <= 100)
         {
             Helpers.PrintHighlightedClique(g, clique);
         }
