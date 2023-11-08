@@ -33,10 +33,10 @@ public class Benchmark
     {
         List<CliqueRecord> cliqueRecords = new();
         Graph g = Graph.GetRandomGraph(vertexCount, edgeProbability);
-        (var cliqueBK, double timeBK) = Timed(() => new BronKerboschMaximumClique().Solve(g));
-        (var cliqueGA, double timeGA) = Timed(() => new GeneticAlgorithm().Solve(g));
-        if(!SolutionChecker.CheckClique(g, cliqueBK)) throw new SolutionChecker.WrongSolutionException();
-        if(!SolutionChecker.CheckClique(g, cliqueGA)) throw new SolutionChecker.WrongSolutionException();
+        ((var cliqueBK, var LBK), double timeBK) = Timed(() => new BronKerboschMaximumClique().Solve(g));
+        ((var cliqueGA, var LGA), double timeGA) = Timed(() => new GeneticAlgorithm().Solve(g));
+        if(!SolutionChecker.CheckClique(g, cliqueBK, LBK)) throw new SolutionChecker.WrongSolutionException();
+        if(!SolutionChecker.CheckClique(g, cliqueGA, LGA)) throw new SolutionChecker.WrongSolutionException();
         cliqueRecords.Add(new CliqueRecord(
                 vertexCount,
                 g.EdgesCount,
@@ -125,8 +125,8 @@ public class Benchmark
         List<int> cliqueCounts = Enumerable.Range(0, 3).Select(x => r.Next(maxClique - 5, maxClique)).ToList();
         List<ApproxRecord> approxRecords = new();
         Graph g = Graph.GetRandomGraphWithCliques(cliqueCounts, vertexCount, edgeProbability);
-        (var clique, double time) = Timed(() => new GeneticAlgorithm().Solve(g));
-        if(!SolutionChecker.CheckClique(g, clique)) throw new SolutionChecker.WrongSolutionException();
+        ((var clique, var L), double time) = Timed(() => new GeneticAlgorithm().Solve(g));
+        if(!SolutionChecker.CheckClique(g, clique, L)) throw new SolutionChecker.WrongSolutionException();
         approxRecords.Add(new ApproxRecord(
             g.VerticesCount,
             g.EdgesCount,

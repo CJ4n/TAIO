@@ -27,9 +27,9 @@ internal class Program
         TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
 
         Graph g = Graph.GetRandomGraphWithCliques(new List<int> { 100, 101, 104}, 1000, 0.7f);
-        (var clique, double time) =
+        ((var clique, var L), double time) =
             TimedUtils.Timed(() => new GeneticAlgorithm().Solve(g));
-        Helpers.EvaluateSolutionForCliqueProblem(g, clique, time);
+        Helpers.EvaluateSolutionForCliqueProblem(g, clique, L, time);
         
     }
 
