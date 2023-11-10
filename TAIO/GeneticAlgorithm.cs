@@ -35,7 +35,8 @@ public class GeneticAlgorithm : ICliqueAlgorithm
             _populations.AddRange(bestSolutions);
         }
 
-        var solutoin = _populations.OrderByDescending(Fitness).First();
+        Selection();
+        var solutoin = _populations[0];
         var thickness = GetMinCliqueThickness(solutoin);
 
         return (solutoin.ToImmutableSortedSet(), thickness);
