@@ -33,20 +33,24 @@ public class CompareBronKerboschWithGeneticAlgorithm
             ((var cliqueBK, var LBK), var time2BK) = TimedUtils.Timed(() => bk.Solve(graph));
             Console.WriteLine("------------------------RESULTS------------------------");
             Console.WriteLine(
-                $"Genetic algorithm found clique of size: {cliqueGA.Count} in time: {timeGA} ");
+                $"Genetic algorithm found clique of size: {cliqueGA.Count}, thickness {LGA} in time: {timeGA} ");
             Console.WriteLine(
-                $"Bron Kerbosch found clique of size: {cliqueBK.Count} in time: {time2BK} ");
+                $"Bron Kerbosch found clique of size: {cliqueBK.Count}, thickness {LBK} in time: {time2BK} ");
+            
+            bool flagToFail = false;
             if (cliqueBK.Count != cliqueGA.Count)
             {
                 Console.WriteLine(
                     "+++++++++++++++++++++++++++++++++++++++Clique sizes are different!+++++++++++++++++++++++++++++++++++++++");
-                if (LGA != LBK)
-                {
-                    Console.WriteLine(
-                        "+++++++++++++++++++++++++++++++++++++++ Cliques of different thickness!+++++++++++++++++++++++++++++++++++++++");
-                }
+           flagToFail = true;     
             }
 
+            if (LGA != LBK)
+            {
+                Console.WriteLine(
+                    "+++++++++++++++++++++++++++++++++++++++ Cliques of different thickness!+++++++++++++++++++++++++++++++++++++++");
+                flagToFail = true;
+            }
 
             Console.WriteLine(
                 "----------------GENETIC ALGORITHM----------------");
@@ -56,6 +60,10 @@ public class CompareBronKerboschWithGeneticAlgorithm
                 "----------------BRON KERBOSH---------------");
             Helpers.EvaluateSolutionForCliqueProblem(graph, cliqueBK.ToImmutableSortedSet(), LBK,
                 time2BK);
+            if (flagToFail)
+            {
+               Assert.Fail(); 
+            }
         }
     }
 }

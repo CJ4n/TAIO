@@ -35,24 +35,10 @@ public class GeneticAlgorithm : ICliqueAlgorithm
             _populations.AddRange(bestSolutions);
         }
 
-        int minNumEdgesBetweenNodes =
-            int.MaxValue; // minimal number of egdes between nodes in mulitgprah 
-        var solutoin = _populations.OrderByDescending(Fitness).First().ToImmutableSortedSet();
-        foreach (var node1 in solutoin)
-        {
-            foreach (var node2 in solutoin)
-            {
-                if (node1 == node2)
-                {
-                    continue;
-                }
+        var solutoin = _populations.OrderByDescending(Fitness).First();
+        var thickness = GetMinCliqueThickness(solutoin);
 
-                minNumEdgesBetweenNodes = Math.Min(minNumEdgesBetweenNodes,
-                    _graph.GetAtBidirectional(node1, node2));
-            }
-        }
-
-        return (solutoin, minNumEdgesBetweenNodes);
+        return (solutoin.ToImmutableSortedSet(), thickness);
     }
 
     private void InitializeAlgorithm(Graph graph)
@@ -108,13 +94,74 @@ public class GeneticAlgorithm : ICliqueAlgorithm
         }
     }
 
+    private bool IsFirstCliqueBigger(HashSet<int> clique1, HashSet<int> clique2)
+    {
+        if (clique1.Count > clique2.Count)
+        {
+            return true;
+        }
+
+        if (clique1.Count < clique2.Count)
+        {
+            return false;
+        }
+
+        int minThicknessInClique1 = GetMinCliqueThickness(clique1);
+        int minThicknessInClique2 = GetMinCliqueThickness(clique2);
+        return minThicknessInClique1 > minThicknessInClique2;
+    }
+
+    private int GetMinCliqueThickness(HashSet<int> clique)
+    {
+        int minThicknessInClique = int.MaxValue;
+        foreach (var node1 in clique)
+        {
+            foreach (var node2 in clique)
+            {
+                if (node1 == node2)
+                {
+                    continue;
+                }
+
+                minThicknessInClique = Math.Min(minThicknessInClique,
+                    _graph.GetAtBidirectional(node1, node2));
+            }
+        }
+
+        if (minThicknessInClique == int.MaxValue)
+        {
+            return 0;
+        }
+
+        return minThicknessInClique;
+    }
+
     private void Selection()
     {
-        // Implement selection logic, e.g., tournament selection, roulette wheel, etc.
-        // For simplicity, let's assume we return a subset of the existing population.
+        // Convert the custom comparator to a Comparison<HashSet<int>> delegate
+        Comparison<HashSet<int>> cliqueComparer = (clique1, clique2) =>
+        {
+            bool isFirstCliqueBigger = IsFirstCliqueBigger(clique1, clique2);
+            if (isFirstCliqueBigger)
+            {
+                return
+                    -1; // clique1sFirstCliqueBigger(clique1, clique2)) is bigger, so it should come first
+            }
 
-        _populations = _populations.OrderByDescending(x => Fitness(x)).Take(_populationSize / 2)
-            .ToList();
+            if (!isFirstCliqueBigger)
+            {
+                return 1; // clique2 is bigger, so it should come first
+            }
+
+            return 0; // Both are equal
+        };
+
+        // Convert _populations to a List, sort it using the custom comparator, and then convert it back to IEnumerable
+        var sortedPopulations = _populations.ToList();
+        sortedPopulations.Sort(cliqueComparer);
+
+        // Take the top half of the sorted list
+        _populations = sortedPopulations.Take(_populationSize / 2).ToList();
     }
 
     private void ApplyHeuristic()

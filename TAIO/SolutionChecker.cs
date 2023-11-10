@@ -23,7 +23,7 @@ public class SolutionChecker
                     continue;
                 }
 
-                if (graph.GetAt(clique[i], clique[j]) == L)
+                if (graph.GetAt(clique[i], clique[j]) >= L)
                 {
                     continue;
                 }
