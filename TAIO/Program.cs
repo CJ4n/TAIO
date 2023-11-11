@@ -17,6 +17,11 @@ internal class Program
             // ExactSubgraphs(Graph.ParseInputFile("graphs/data1.txt"));
             // ApproximatedCliques();
             // ApproximatedSubgraphs();
+
+            var graphs = Graph.ParseInputFile("graphs/data1.txt").Take(2).ToList();
+            Console.WriteLine($"Exact(G,H) = {Graph.ExactDistance(graphs[0], graphs[1])}");
+            Console.WriteLine($"Approx(H,G) = {Graph.ApproxDistance(graphs[1], graphs[0])}");
+
         }
         catch (NotImplementedException exception)
         {

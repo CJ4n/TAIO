@@ -1,4 +1,5 @@
 using System.Text;
+using TAIO;
 
 public class Graph
 {
@@ -154,6 +155,30 @@ public class Graph
 
         return filteredMatrix;
     }
+    
+    /*
+     * Calculates the exact distance between two graphs
+     */
+    public static double ExactDistance(Graph g1, Graph g2)
+    {
+        return 1.0 - (double)GetMaxSubgraphSize(new BronKerboschMaximumClique(), g1, g2) / 
+            Math.Max(g1.VerticesCount, g2.VerticesCount);
+    }
+    
+    /*
+     * Calculates the approximated distance between two graphs
+     */
+    public static double ApproxDistance(Graph g1, Graph g2)
+    {
+        return 1.0 - (double)GetMaxSubgraphSize(new GeneticAlgorithm(), g1, g2) / 
+            Math.Max(g1.VerticesCount, g2.VerticesCount);
+    }
+
+    private static int GetMaxSubgraphSize(ICliqueAlgorithm cliqueAlgorithm, Graph g1, Graph g2)
+    {
+        return new SubgraphUsingClique(cliqueAlgorithm).Solve(g1, g2).Count;
+    }
+    
 
     /*
      * Permutes two vertices index1 and index2
