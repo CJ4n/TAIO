@@ -54,4 +54,15 @@ public static class Helpers
         Console.WriteLine("===============================================");
         return isClique;
     }
+
+    public static void EvaluateSolutionForSubgraphProblem(ImmutableSortedSet<(int, int)> subgraph, double time, Graph g1, Graph g2)
+    {
+        Console.WriteLine(
+            $"Found subgraph of size {subgraph.Count} with vertices mapping: {Helpers.ItemsToString(subgraph)} in {time} ms");
+        Helpers.PrintHighlightedSubgraph(g1, subgraph, 0);
+        Console.WriteLine();
+        Helpers.PrintHighlightedSubgraph(g2, subgraph, 1);
+        SolutionChecker.CheckSubgraph(g1, g2, subgraph, true);
+        Console.WriteLine("===============================================");
+    }
 }
