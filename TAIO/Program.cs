@@ -1,5 +1,4 @@
-﻿using TAIO;
-using System.CommandLine;
+﻿using System.CommandLine;
 
 internal class Program
 {
@@ -7,117 +6,140 @@ static async Task<int> Main(string[] args)
     {
         var rootCommand = new RootCommand("This is a simple program for graph property exploration");
 
-        rootCommand.AddCommand(getCliqueCommand());
-        rootCommand.AddCommand(getSubgraphCommand());
+        rootCommand.AddCommand(GetCliqueCommand());
+        rootCommand.AddCommand(GetSubgraphCommand());
+        rootCommand.AddCommand(GetSizeCommand());
+        rootCommand.AddCommand(GetDistanceCommand());
         return await rootCommand.InvokeAsync(args);
     }
 
-    private static void ApproximatedCliques(List<Graph> graphs)
+    private static Option<bool> GetAlgorithmType() 
     {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() => new GeneticAlgorithm().Solve(new Graph(new int[1, 1])));
-
-        foreach (var g in graphs)
-        {
-            ((var clique, var L), double time) =
-                TimedUtils.Timed(() => new GeneticAlgorithm().Solve(g));
-            Helpers.EvaluateSolutionForCliqueProblem(g, clique, L, time);
-        }
-    }
-    private static void ApproximatedSubgraphs()
-    {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
-
-        Graph g1 = Graph.GetRandomGraph(50, 0.9f);
-        Graph g2 = Graph.GetRandomGraph(50, 0.9f);
-        (var subgraph, double time) =
-            TimedUtils.Timed(() => new SubgraphUsingClique(new GeneticAlgorithm()).Solve(g1, g2));
-            Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, g1, g2);
-        
-    }
-
-    private static void ExactSubgraphs(List<Graph> graphs)
-    {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() =>
-            new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(new Graph(new int[1, 1]),
-                new Graph(new int[1, 1])));
-
-        for (int i = 0; i < graphs.Count; i++)
-        for (int j = i + 1; j < graphs.Count; j++)
-        {
-            var g1 = graphs[i];
-            var g2 = graphs[j];
-            (var subgraph, double time) =
-                TimedUtils.Timed(() =>
-                    new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(g1, g2));
-                Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, g1, g2);
-        }
-    }
-
-
-    private static void ExactCliques(List<Graph> graphs)
-    {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
-
-        foreach (var g in graphs)
-        {
-            ((var clique, var L), double time) =
-                TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(g));
-            Helpers.EvaluateSolutionForCliqueProblem(g, clique, L, time);
-        }
-    }
-
-    private static Option<bool> getAlgorithmType() {
         return new Option<bool> (
             name: "isExact",
-            description: "Use approximated algorithms",
+            description: "Should use exact algorithms for calculations",
             getDefaultValue: () => false);
         
     }
 
-    private static Argument<string> getPathArgument() {
+    private static Argument<string> GetPathArgument() 
+    {
         return new Argument<string>(
-            name: "path",
+            name: "path to file",
             description: "path to file containing graphs"
         );
     }
-    private static Command getCliqueCommand() {
+
+    private static Command GetCliqueCommand() 
+    {
 
         var cliqueCommand = new Command(
             name: "clique",
             description: "Calculate clique of graph"
         );
 
-        var algorithType = getAlgorithmType();
-        var fileInput = getPathArgument();
+        var algorithmType = GetAlgorithmType();
+        var fileInput = GetPathArgument();
 
-        cliqueCommand.AddOption(algorithType);
+        cliqueCommand.AddOption(algorithmType);
         cliqueCommand.AddArgument(fileInput);
         
         cliqueCommand.SetHandler((isExact, input) => {
             List<Graph> graphs = Graph.ParseInputFile(input);
-            Console.WriteLine($"Executing for isExact={isExact}, path={input}");
-            if (isExact) {
-                ExactCliques(graphs);
-            } else {
-                ApproximatedCliques(graphs);
+            if (isExact) 
+            {
+                Tasks.ExactCliques(graphs);
             }
-        }, algorithType, fileInput);
+            else
+            {
+                Tasks.ApproximatedCliques(graphs);
+            }
+        }, algorithmType, fileInput);
 
         return cliqueCommand;
     }
 
-    private static Command getSubgraphCommand() {
+    private static Command GetSubgraphCommand() 
+    {
         var subgraphCommand = new Command(
             name: "subgraph",
-            description: "Calculate subgraph of graphs"
+            description: "Calculate subgraphs of provided pairs of graphs"
         );
 
-        // how are we gonna pass them ?
+        var algorithmType = GetAlgorithmType();
+        var fileInput = GetPathArgument();
+
+        subgraphCommand.AddOption(algorithmType);
+        subgraphCommand.AddArgument(fileInput);
+        
+        subgraphCommand.SetHandler((isExact, input)=> {
+            List<Graph> graphs = Graph.ParseInputFile(input);
+            if (graphs.Count % 2 != 0) 
+            {
+                Console.WriteLine("Amount of graphs in file needs to be divisible by 2");
+                return;
+            }
+            if (isExact) 
+            {
+                Tasks.ExactSubgraphs(graphs);
+            }
+            else 
+            {
+                Tasks.ApproximatedSubgraphs(graphs);
+            }
+        }, algorithmType, fileInput);
 
         return subgraphCommand;
+    }
+
+    private static Command GetSizeCommand() 
+    {
+        var sizeCommand = new Command(
+            name: "size",
+            description: "Calculate size of each graph"
+        );
+
+        var fileInput = GetPathArgument();
+        sizeCommand.AddArgument(fileInput);
+
+        sizeCommand.SetHandler((input)=>{
+            List<Graph> graphs = Graph.ParseInputFile(input);
+            Tasks.Size(graphs);
+        }, fileInput);
+
+        return sizeCommand;
+    }
+
+    private static Command GetDistanceCommand()
+    {
+        var metricsCommand = new Command(
+            name: "distance",
+            description: "Calculate distance between pairs of graphs"
+        );
+
+        var fileInput = GetPathArgument();
+        var algorithmType = GetAlgorithmType();
+
+        metricsCommand.AddArgument(fileInput);
+        metricsCommand.AddOption(algorithmType);
+
+        metricsCommand.SetHandler((isExact, input)=> {
+            List<Graph> graphs = Graph.ParseInputFile(input);
+            if (graphs.Count % 2 != 0) 
+            {
+                Console.WriteLine("Amount of graphs in file needs to be divisible by 2");
+                return;
+            }
+            if (isExact) 
+            {
+                Tasks.ExactMatrics(graphs);
+            }
+            else 
+            {
+                Tasks.ApproximateMetrics(graphs);
+            }
+        }, algorithmType, fileInput);
+
+        return metricsCommand;
     }
 }
