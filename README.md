@@ -63,7 +63,7 @@ Program znajdzie maksymalną klikę dla każdego grafu zapisanego w pliku, któr
 
 **Zastosowanie**:
 
-Program znajduje maksymalny podgraf dla każdej pary grafów podanych w pliku podanych jako argument (tj. jeżeli w pliku zapisane są gragy: G1, G2, G3, G4 obliczone zostanne podgrafy dla G1 z G2 oraz G3 z G4).
+Program znajduje maksymalny podgraf dla każdej pary grafów podanych w pliku podanych jako argument (tj. jeżeli w pliku zapisane są grafy: G1, G2, G3, G4 obliczone zostanne podgrafy dla G1 z G2 oraz G3 z G4).
 W Przypodaku w którym liczba grafów w pliku jest niepzrzysta program zwórci bład informujący o tym.
 
 ### Znalezienie odległości dwóch grafów
@@ -81,5 +81,5 @@ W Przypodaku w którym liczba grafów w pliku jest niepzrzysta program zwórci b
 
 **Zastosowanie**:
 
-Program znajduje odległość między parami grafów podanych w pliku jako argument (tj. jeżeli w pliku zapisane są gragy: G1, G2, G3, G4 obliczone zostaną odległości G1-G2 oraz G3-G4).
+Program znajduje odległość między parami grafów podanych w pliku jako argument (tj. jeżeli w pliku zapisane są grafy: G1, G2, G3, G4 obliczone zostaną odległości G1-G2 oraz G3-G4).
 W Przypodaku w którym liczba grafów w pliku jest niepzrzysta program zwórci bład informujący o tym.
