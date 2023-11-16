@@ -29,7 +29,7 @@ Grafy izomorficzne po permutacji (1,3). Odległość: 0  (G1)
 3 0 0 7 3 
 2 0 0 0 0 
 2 1 3 0 0  
-Grafy izomorficzne po permutacji. Odległość: 0  (1,3) (G2)
+Grafy izomorficzne po permutacji (1,3). Odległość: 0 (G2)
 
 5
 0 0 5 0 0 
