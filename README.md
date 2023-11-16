@@ -52,11 +52,13 @@ Program znajdzie maksymalną klikę dla każdego grafu zapisanego w pliku, któr
 
 **Wywołania**:
 
-`TAIO.exe subgraph <ścieżka do pliku>`
-`TAIO.exe subgraph <ścieżka do pliku> isExact=true`
+`TAIO.exe subgraph <ścieżka do pliku 1> <ścieżka do pliku 2>`
+
+`TAIO.exe subgraph <ścieżka do pliku 1> <ścieżka do pliku 2> isExact=true`
 
 **Argumenty**:
-- *ścieżka do pliku* - ścieżka do pliku .txt zawierającego grafy
+- *ścieżka do pliku 1* - ścieżka do pliku .txt zawierającego grafy do wykorzystania jako pierwsze z pary do porównania.
+- *ścieżka do pliku 2* - ścieżka do pliku .txt zawierającego grafy do wykorzystania jako drugie z pary do porównania.
 
 **Opcje**:
 - *isExact* - opcja użycia w programie algorytmu dokładnego do wykonania obliczeń, defaultowo opcja ta ustawiona jest na false (więc bez podania jej program używa algorytmów aproksymacyjnych)
@@ -70,11 +72,12 @@ W Przypodaku w którym liczba grafów w pliku jest niepzrzysta program zwórci b
 
 **Wywołania**:
 
-`TAIO.exe distance <ścieżka do pliku>`
-`TAIO.exe distance <ścieżka do pliku> isExact=true`
+`TAIO.exe distance <ścieżka do pliku 1> <ścieżka do pliku 2>`
+`TAIO.exe distance <ścieżka do pliku 1> <ścieżka do pliku 2> isExact=true`
 
 **Argumenty**:
-- *ścieżka do pliku* - ścieżka do pliku .txt zawierającego grafy
+- *ścieżka do pliku 1* - ścieżka do pliku .txt zawierającego grafy do wykorzystania jako pierwsze z pary do porównania.
+- *ścieżka do pliku 2* - ścieżka do pliku .txt zawierającego grafy do wykorzystania jako drugie z pary do porównania.
 
 **Opcje**:
 - *isExact* - opcja użycia w programie algorytmu dokładnego do wykonania obliczeń, defaultowo opcja ta ustawiona jest na false (więc bez podania jej program używa algorytmów aproksymacyjnych)
