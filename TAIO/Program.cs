@@ -27,8 +27,8 @@ static async Task<int> Main(string[] args)
     private static Argument<List<string>> GetPathArgument() 
     {
         return new Argument<List<string>>(
-            name: "path to file",
-            description: "path to file containing graphs"
+            name: "path to files",
+            description: "path to files containing graphs"
         );
     }
 
