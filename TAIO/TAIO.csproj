@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="benchmarks\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="CsvHelper">
       <HintPath>..\..\..\.nuget\packages\csvhelper\30.0.1\lib\net6.0\CsvHelper.dll</HintPath>
     </Reference>

@@ -1,9 +1,14 @@
 ﻿using System.CommandLine;
+using TAIO;
+using TAIO_tests;
 
 internal class Program
 {
 static async Task<int> Main(string[] args)
-    {
+{
+        Benchmark.RunFullCliqueBenchmark();
+        // GraphGenerator.GenerateGraphsToFile(new[]{5}, "graphs/data5.txt");
+        return 0;
         var rootCommand = new RootCommand("This is a simple program for graph property exploration");
 
         rootCommand.AddCommand(GetCliqueCommand());

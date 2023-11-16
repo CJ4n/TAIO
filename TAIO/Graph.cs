@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text;
 using TAIO;
 
@@ -7,15 +8,25 @@ public class Graph
     public int EdgesCount { get; set; }
     public int[,]? Matrix { get; set; }
 
-    // symmetrical matrix of maximal bidirectional subgraph
+    // Symmetrical matrix with only bidirectional edges of the graph.
     private int[,]? BidirectionalMatrix { get; set; }
+    // Optional description of the graph
+    private string Description { get; set; }
 
+
+    /*
+     * Create Empty graph
+     */
     public Graph(int verticesCount)
     {
         VerticesCount = verticesCount;
         Matrix = new int[verticesCount, verticesCount];
+        Description = "";
     }
 
+    /*
+     * Create a graph from adjacency matrix
+     */
     public Graph(int[,] matrix)
     {
         if (matrix.GetLength(0) != matrix.GetLength(1))
@@ -26,6 +37,9 @@ public class Graph
         BidirectionalMatrix = RemoveSingularEdges();
     }
 
+    /*
+     * Count edges in the adjacency matrix
+     */
     private int CountEdges()
     {
         if (Matrix == null) return 0;
@@ -57,7 +71,7 @@ public class Graph
                 Graph g = new Graph(n);
                 for (int i = 0; i < n; i++)
                 {
-                    var values = (file.ReadLine()?.Split(' '));
+                    var values = file.ReadLine()?.Split(' ');
                     for (int j = 0; j < n; j++)
                     {
                         int edges = int.Parse(values![j]);
@@ -66,11 +80,24 @@ public class Graph
                     }
                 }
 
+                while (file.ReadLine() is { } ln2)
+                {
+                    if (ln2 == "")
+                        break;
+                    if (g.Description != "") g.Description += "\n";
+                    g.Description += ln2;
+                }
+
                 g.BidirectionalMatrix = g.RemoveSingularEdges();
                 result.Add(g);
             }
 
             file.Close();
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine($"Could not find the input file:\n{e}");
+            throw;
         }
         catch (Exception e)
         {
@@ -93,8 +120,9 @@ public class Graph
         for (int j = 0; j < n; j++)
             if (i != j && r.NextSingle() <= edgeProbability)
             {
-                g.EdgesCount++;
-                g.Matrix![i, j] = 1;
+                int edges = r.Next(1, 9);
+                g.EdgesCount+= edges;
+                g.Matrix![i, j] = edges;
             } 
             else g.Matrix![i, j] = 0;
             
@@ -113,8 +141,9 @@ public class Graph
         for (int j = 0; j < n; j++)
             if (i != j && r.NextSingle() <= edgeProbability)
             {
-                g.EdgesCount++;
-                g.Matrix![i, j] = 1;
+                int edges = r.Next(1, 9);
+                g.EdgesCount+= edges;
+                g.Matrix![i, j] = edges;
             } 
             else g.Matrix![i, j] = 0;
 
@@ -135,9 +164,42 @@ public class Graph
         g.BidirectionalMatrix = g.RemoveSingularEdges();
         return g;
     }
+    
+    /*
+     * Generates random graph with a subgraph of a certain size
+     */
+    public static Graph GetRandomGraphWithSubgraph(Graph sub, int n, float edgeProbability = 0.5f)
+    {
+        if (sub.VerticesCount > n) throw new ArgumentException("Subgraph should not be bigger than the graph");
+        var r = new Random();
+        Graph g = new Graph(n);
+        var verts = Enumerable.Range(0, n).OrderBy(_ => r.Next()).Take(sub.VerticesCount).ToList();
+        int l = 0;
+        var map = verts.ToDictionary(e => e, _ => l++);
+        for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+        {
+            if (map.ContainsKey(i) && map.ContainsKey(j))
+            {
+                int edges = sub.GetAt(map[i], map[j]);
+                g.EdgesCount+= edges;
+                g.Matrix![i, j] = edges;
+            } else
+            if (i != j && r.NextSingle() <= edgeProbability)
+            {
+                int edges = r.Next(0, 9);
+                g.EdgesCount+= edges;
+                g.Matrix![i, j] = edges;
+            } 
+            else g.Matrix![i, j] = 0;
+
+        }
+        g.BidirectionalMatrix = g.RemoveSingularEdges();
+        return g;
+    }
 
     /*
-     * Removes one-way edges from the graph. Can be used as a preprocessing for finding a clique in graph.
+     * Removes one-way edges from the graph.
      */
     public int[,] RemoveSingularEdges()
     {
@@ -176,36 +238,27 @@ public class Graph
 
     private static int GetMaxSubgraphSize(ICliqueAlgorithm cliqueAlgorithm, Graph g1, Graph g2)
     {
-        return new SubgraphUsingClique(cliqueAlgorithm).Solve(g1, g2).Count;
-    }
-    
-
-    /*
-     * Permutes two vertices index1 and index2
-     */
-    public void Permute(int index1, int index2)
-    {
-        throw new NotImplementedException();
+        return new SubgraphUsingClique(cliqueAlgorithm).Solve(g1, g2).Item1.Count;
     }
 
     public int GetAt(int column, int row)
     {
-        return this.Matrix?[column, row] ?? throw new IndexOutOfRangeException();
+        return Matrix?[column, row] ?? throw new IndexOutOfRangeException();
     }
 
     public int GetAtBidirectional(int column, int row)
     {
-        return this.BidirectionalMatrix?[column, row] ?? throw new IndexOutOfRangeException();
+        return BidirectionalMatrix?[column, row] ?? throw new IndexOutOfRangeException();
     }
 
     public bool IsBidirectionalEdge(int node1, int node2)
     {
-        return this.GetAtBidirectional(node1,node2) >0;
+        return GetAtBidirectional(node1,node2) >0;
     }
 
-    public int Size()
+    public (int, int) Size()
     {
-        return VerticesCount + EdgesCount;
+        return (VerticesCount, EdgesCount);
     }
 
 
@@ -226,23 +279,29 @@ public class Graph
 
         var color = Console.BackgroundColor;
         var fontColor = Console.ForegroundColor;
-        Console.WriteLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
-        for (int i = 0; i < VerticesCount; ++i)
+        if (VerticesCount <= 100)
         {
-            for (int j = 0; j < VerticesCount; ++j)
+            for (int i = 0; i < VerticesCount; ++i)
             {
-                if (hightlightMatrix[i, j] == true)
+                for (int j = 0; j < VerticesCount; ++j)
                 {
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                };
-                Console.Write(Matrix[i, j] + " ");
-                Console.BackgroundColor = color;
-                Console.ForegroundColor = fontColor;
+                    if (hightlightMatrix[i, j])
+                    {
+                        if(i == j) 
+                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                        else
+                            Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                    };
+                    Console.Write(Matrix[i, j] + " ");
+                    Console.BackgroundColor = color;
+                    Console.ForegroundColor = fontColor;
+                }
+                Console.WriteLine();
             }
-
-            Console.WriteLine();
         }
+        Console.WriteLine($"Graph (V:{VerticesCount}, E:{EdgesCount})");
+        Console.WriteLine($"Desc: \"{Description}\"");
     }
 
     public String Serialize()
@@ -258,7 +317,7 @@ public class Graph
 
             sb.AppendLine();
         }
-
+        sb.AppendLine(Description);
         return sb.ToString();
     }
 
@@ -266,7 +325,7 @@ public class Graph
     {
         if (Matrix == null) return "[]";
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"Graph V:{VerticesCount}, E:{EdgesCount}");
+        sb.AppendLine($"Graph (V:{VerticesCount}, E:{EdgesCount})");
         if (VerticesCount > 50) return sb.ToString();
         sb.Append(Serialize());
         return sb.ToString();

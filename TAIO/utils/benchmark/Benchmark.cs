@@ -14,9 +14,9 @@ public class Benchmark
         Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
 
         List<CliqueRecord> cliqueRecords = new();
-        int sampleSize = 10;
-        List<int> verticesCounts = new List<int>{50, 60, 70, 80, 90, 100};
-        List<float> edgeProbabilities = new List<float> {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
+        int sampleSize = 3;
+        List<int> verticesCounts = new List<int>{60};
+        List<float> edgeProbabilities = new List<float> {0.96f, 0.97f, 0.98f, 0.99f, 1};
         
         foreach (int verticesCount in verticesCounts)
         foreach (float edgeProbability in edgeProbabilities)
@@ -39,7 +39,7 @@ public class Benchmark
         if(!SolutionChecker.CheckClique(g, cliqueGA, LGA)) throw new SolutionChecker.WrongSolutionException();
         cliqueRecords.Add(new CliqueRecord(
                 vertexCount,
-                g.EdgesCount,
+                edgeProbability,
                 cliqueBK.Count,
                 cliqueGA.Count,
                 cliqueBK.Count - cliqueGA.Count,
@@ -55,40 +55,42 @@ public class Benchmark
         Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
 
         List<SubgraphRecord> subgraphRecords = new();
-        int sampleSize = 10;
-        List<int> verticesCounts = new List<int>{4, 5, 6, 7, 8, 9};
-        List<float> edgeProbabilities = new List<float> {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
+        int sampleSize =10;
+        List<int> verticesCounts = new List<int> {50};
+        List<int> v2s = new List<int> {10, 20, 30, 40, 50};
+        List<float> edgeProbabilities = new List<float> {0.7f};
         
         foreach (int verticesCount in verticesCounts)
+        foreach (int v2 in v2s)
         foreach (float edgeProbability in edgeProbabilities)
             for (int i = 0; i < sampleSize; i++)
             {
-                subgraphRecords.AddRange(RunSubgraphBenchmark(verticesCount, edgeProbability));
+                subgraphRecords.AddRange(RunSubgraphBenchmark(verticesCount, v2, edgeProbability));
                 Console.WriteLine($"Done: V:{verticesCount}, EP:{edgeProbability}, no.{i+1}");
             }
         
         SaveBenchmark<SubgraphRecord, SubgraphRecord.SubgraphRecordMap>(subgraphRecords);
     }
     
-    private static List<SubgraphRecord> RunSubgraphBenchmark(int vertexCount, float edgeProbability)
+    private static List<SubgraphRecord> RunSubgraphBenchmark(int vertexCount, int v2, float edgeProbability)
     {
         List<SubgraphRecord> subgraphRecords = new();
         Graph g1 = Graph.GetRandomGraph(vertexCount, edgeProbability);
-        Graph g2 = Graph.GetRandomGraph(vertexCount, edgeProbability);
+        Graph g2 = Graph.GetRandomGraph(v2, edgeProbability);
         (var subgraphBK, double timeBK) = Timed(
             () => new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(g1,g2));
         (var subgraphGA, double timeGA) = Timed(
             () => new SubgraphUsingClique(new GeneticAlgorithm()).Solve(g1, g2));
-        if(!SolutionChecker.CheckSubgraph(g1, g2, subgraphBK)) throw new SolutionChecker.WrongSolutionException();
-        if(!SolutionChecker.CheckSubgraph(g1, g2, subgraphGA)) throw new SolutionChecker.WrongSolutionException();
+        if(!SolutionChecker.CheckSubgraph(g1, g2, subgraphBK.Item1)) throw new SolutionChecker.WrongSolutionException();
+        if(!SolutionChecker.CheckSubgraph(g1, g2, subgraphGA.Item1)) throw new SolutionChecker.WrongSolutionException();
         subgraphRecords.Add(new SubgraphRecord(
             g1.VerticesCount,
             g1.EdgesCount,
             g2.VerticesCount,
             g2.EdgesCount,
-            subgraphBK.Count,
-            subgraphGA.Count,
-            subgraphBK.Count - subgraphGA.Count,
+            subgraphBK.Item1.Count,
+            subgraphGA.Item1.Count,
+            subgraphBK.Item1.Count - subgraphGA.Item1.Count,
             timeBK,
             timeGA
         ));
@@ -101,13 +103,10 @@ public class Benchmark
         Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
 
         List<ApproxRecord> approxRecords = new();
-        int sampleSize = 5;
-        // List<int> verticesCounts = new List<int>{100, 500, 1000, 2000, 3000};
-        // List<int> cliqueCounts = new List<int>{20, 50, 100, 300, 500, 1000};
-        // List<float> edgeProbabilities = new List<float> {0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f };
-        List<int> verticesCounts = new List<int>{1000};
-        List<int> cliqueCounts = new List<int>{20, 50, 100, 300};
-        List<float> edgeProbabilities = new List<float> {0.8f, 0.9f };
+        int sampleSize = 10;
+        List<int> verticesCounts = new List<int>{200};
+        List<int> cliqueCounts = new List<int>{10, 20, 30};
+        List<float> edgeProbabilities = new List<float> {0.4f};
         foreach (int verticesCount in verticesCounts)
         foreach (int cliqueCount in cliqueCounts.Where(cliqueCount => cliqueCount < verticesCount))
         foreach (var edgeProbability in edgeProbabilities)
@@ -124,7 +123,7 @@ public class Benchmark
     private static List<ApproxRecord> RunApproximationBenchmark(int maxClique, int vertexCount, float edgeProbability)
     {
         var r = new Random();
-        List<int> cliqueCounts = Enumerable.Range(0, 3).Select(x => r.Next(maxClique - 5, maxClique)).ToList();
+        List<int> cliqueCounts = Enumerable.Range(0, 10).Select(x => r.Next(maxClique - 5, maxClique)).ToList();
         List<ApproxRecord> approxRecords = new();
         Graph g = Graph.GetRandomGraphWithCliques(cliqueCounts, vertexCount, edgeProbability);
         ((var clique, var L), double time) = Timed(() => new GeneticAlgorithm().Solve(g));

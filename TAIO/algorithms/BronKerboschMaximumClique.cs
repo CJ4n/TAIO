@@ -8,7 +8,7 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
 
     private Graph _graph;
 
-    // Klika maksymalna
+    // Klika największa
     private HashSet<int> _rMax;
     private int _maxEdge;
 
@@ -16,6 +16,8 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
     {
         _graph = graph;
         // Zbiór wierzchołków, które są kandydatami do rozważenia.
+        // W każdej chwili w zbiorze P znajdują się wierzchołki, z których każdy z osobna
+        // jest w stanie zwiększyć klikę w zbiorze R.
         var pSet = Enumerable.Range(0, graph.VerticesCount).ToHashSet();
         // Zbiór wierzchołków, które są częściowym wynikiem znajdowania kliki.
         var rSet = new HashSet<int>();
@@ -27,7 +29,7 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
         return (_rMax.ToImmutableSortedSet(), _maxEdge);
     }
 
-    private void BronKerbosch(HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet, int edgeCount) // TODO add to theory
+    private void BronKerbosch(HashSet<int> pSet, HashSet<int> rSet, HashSet<int> xSet, int edgeCount)
     {
         int ncmax, edges;
         if (pSet.Count == 0 && xSet.Count == 0)
@@ -65,8 +67,8 @@ public class BronKerboschMaximumClique : ICliqueAlgorithm
         pBis.ExceptWith(vNeighs);
         foreach (int y in pBis)
         {
-            int yEdges = rSet.Count != 0? rSet.Min(r=>_graph.GetAtBidirectional(r, y)): 0;
-            edges = edgeCount == 0 || yEdges < edgeCount ? yEdges : edgeCount;
+            int yEdges = rSet.Count != 0? rSet.Sum(r=>_graph.GetAtBidirectional(r, y)): 0;
+            edges = edgeCount + yEdges;
             var nSet = new HashSet<int>();
             nSet.UnionWith(_graph.GetNeighboursBi(y));
             var rPrim = new HashSet<int>();

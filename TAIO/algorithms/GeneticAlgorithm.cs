@@ -37,7 +37,7 @@ public class GeneticAlgorithm : ICliqueAlgorithm
 
         Selection();
         var solutoin = _populations[0];
-        var thickness = GetMinCliqueThickness(solutoin);
+        var thickness = GetSumCliqueThickness(solutoin);
 
         return (solutoin.ToImmutableSortedSet(), thickness);
     }
@@ -107,34 +107,24 @@ public class GeneticAlgorithm : ICliqueAlgorithm
             return false;
         }
 
-        int minThicknessInClique1 = GetMinCliqueThickness(clique1);
-        int minThicknessInClique2 = GetMinCliqueThickness(clique2);
-        return minThicknessInClique1 > minThicknessInClique2;
+        int sumThicknessInClique1 = GetSumCliqueThickness(clique1);
+        int sumThicknessInClique2 = GetSumCliqueThickness(clique2);
+        return sumThicknessInClique1 > sumThicknessInClique2;
     }
 
-    private int GetMinCliqueThickness(HashSet<int> clique)
+    private int GetSumCliqueThickness(HashSet<int> clique)
     {
-        int minThicknessInClique = int.MaxValue;
-        foreach (var node1 in clique)
+        var set = clique.ToImmutableSortedSet();
+        int edgeSum = 0;
+        for (int i = 0; i < set.Count; i++)
         {
-            foreach (var node2 in clique)
+            for (int j = i + 1; j < set.Count; j++)
             {
-                if (node1 == node2)
-                {
-                    continue;
-                }
-
-                minThicknessInClique = Math.Min(minThicknessInClique,
-                    _graph.GetAtBidirectional(node1, node2));
+                edgeSum += _graph.GetAtBidirectional(set[i], set[j]);
             }
         }
 
-        if (minThicknessInClique == int.MaxValue)
-        {
-            return 0;
-        }
-
-        return minThicknessInClique;
+        return edgeSum;
     }
 
     private void Selection()

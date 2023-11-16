@@ -5,14 +5,14 @@ namespace TAIO_tests;
 public class CliqueRecord
 {
     public int VertexCount { get; set; }
-    public int EdgeCount { get; set; }
+    public float EdgeCount { get; set; }
     public int MaximumCliqueSize { get; set; }
     public int MaximumCliqueApproximationSize { get; set; }
     public int ApproximationError { get; set; }
     public double BronKerboschTime { get; set; }
     public double GeneticAlgorithmTime { get; set; }
 
-    public CliqueRecord(int vertexCount, int edgeCount, int maximumCliqueSize, int maximumCliqueApproximationSize, int approximationError, double bronKerboschTime, double geneticAlgorithmTime)
+    public CliqueRecord(int vertexCount, float edgeCount, int maximumCliqueSize, int maximumCliqueApproximationSize, int approximationError, double bronKerboschTime, double geneticAlgorithmTime)
     {
         VertexCount = vertexCount;
         EdgeCount = edgeCount;

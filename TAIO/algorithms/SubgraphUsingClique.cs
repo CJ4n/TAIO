@@ -9,11 +9,11 @@ public class SubgraphUsingClique
     {
         _algorithm = algorithm;
     }
-    public ImmutableSortedSet<(int, int)> Solve(Graph graph1, Graph graph2)
+    public (ImmutableSortedSet<(int, int)>, int) Solve(Graph graph1, Graph graph2)
     {
         Graph g = ModularProduct(graph1, graph2);
-        (var clique, var L) = _algorithm.Solve(g);
-        return clique.Select(v => (v / graph2.VerticesCount, v % graph2.VerticesCount)).ToImmutableSortedSet();
+        var (clique, L) = _algorithm.Solve(g);
+        return (clique.Select(v => (v / graph2.VerticesCount, v % graph2.VerticesCount)).ToImmutableSortedSet(), L - (clique.Count*(clique.Count-1))/2 );
     }
 
     private Graph ModularProduct(Graph graph1, Graph graph2)
@@ -25,7 +25,15 @@ public class SubgraphUsingClique
         for (int q1 = 0; q1 < graph1.VerticesCount; q1++)
         for (int q2 = 0; q2 < graph2.VerticesCount; q2++)
         {
-            int edge = p1==q1 || p2==q2 || graph1.GetAt(p1, q1) != graph2.GetAt(p2, q2)? 0: 1;
+            int edge = p1!=q1 && p2!=q2 &&
+                       ((graph1.GetAt(p1, q1) >0 && graph2.GetAt(p2, q2) > 0) ||
+                        (graph1.GetAt(p1, q1) == 0 && graph2.GetAt(p2, q2) == 0)) &&
+                       ((graph1.GetAt(q1, p1) > 0 && graph2.GetAt(q2, p2) > 0) ||
+                        (graph1.GetAt(q1, p1) == 0 && graph2.GetAt(q2, p2) == 0))? 
+                1 + 
+                int.Min(graph1.GetAt(p1, q1), graph2.GetAt(p2, q2)) + 
+                int.Min(graph1.GetAt(q1, p1), graph2.GetAt(q2, p2)):
+                0;
             matrix[p1 * graph2.VerticesCount + p2, q1 * graph2.VerticesCount + q2] = edge;
         }
         return new Graph(matrix);

@@ -9,7 +9,7 @@ public class GraphGenerator
         foreach (var verticesCount in verticesCounts)
         {
             outputFile.WriteLine(verticesCount);
-            outputFile.WriteLine(Graph.GetRandomGraph(verticesCount).Serialize());
+            outputFile.WriteLine(Graph.GetRandomGraph(verticesCount, 0.8f).Serialize());
         }
     }
 }

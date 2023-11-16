@@ -43,26 +43,24 @@ public static class Helpers
         int L,
         double time)
     {
+        PrintHighlightedClique(g, clique);
         Console.WriteLine(
-            $"Found clique of size {clique.Count} of thickness {L} with vertices: {Helpers.ItemsToString(clique)} in {time} ms");
-        if (g.VerticesCount <= 100)
-        {
-            Helpers.PrintHighlightedClique(g, clique);
-        }
+            $"Found clique of size {clique.Count} with {L} bidirectional edges with vertices: {ItemsToString(clique)} in {time} ms");
 
-        bool isClique = SolutionChecker.CheckClique(g, clique,L);
+        bool isClique = SolutionChecker.CheckClique(g, clique,L, true);
         Console.WriteLine("===============================================");
         return isClique;
     }
 
-    public static void EvaluateSolutionForSubgraphProblem(ImmutableSortedSet<(int, int)> subgraph, double time, Graph g1, Graph g2)
+    public static void EvaluateSolutionForSubgraphProblem((ImmutableSortedSet<(int, int)>, int) subgraph, double time, Graph g1, Graph g2)
     {
-        Console.WriteLine(
-            $"Found subgraph of size {subgraph.Count} with vertices mapping: {Helpers.ItemsToString(subgraph)} in {time} ms");
-        Helpers.PrintHighlightedSubgraph(g1, subgraph, 0);
+       
+        PrintHighlightedSubgraph(g1, subgraph.Item1, 0);
         Console.WriteLine();
-        Helpers.PrintHighlightedSubgraph(g2, subgraph, 1);
-        SolutionChecker.CheckSubgraph(g1, g2, subgraph, true);
+        PrintHighlightedSubgraph(g2, subgraph.Item1, 1);
+        Console.WriteLine(
+            $"Found subgraph of size (V:{subgraph.Item1.Count}, E:{subgraph.Item2}) with vertices mapping: {ItemsToString(subgraph.Item1)} in {time} ms");
+        SolutionChecker.CheckSubgraph(g1, g2, subgraph.Item1, true);
         Console.WriteLine("===============================================");
     }
 }

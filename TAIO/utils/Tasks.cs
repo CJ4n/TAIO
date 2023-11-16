@@ -5,9 +5,7 @@ public static class Tasks
 {
     public static void ApproximatedCliques(List<Graph> graphs)
     {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() => new GeneticAlgorithm().Solve(new Graph(new int[1, 1])));
-
+        Warmup();
         foreach (var g in graphs)
         {
             ((var clique, var L), double time) =
@@ -18,9 +16,7 @@ public static class Tasks
 
      public static void ExactCliques(List<Graph> graphs)
     {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
-
+        Warmup();
         foreach (var g in graphs)
         {
             ((var clique, var L), double time) =
@@ -31,25 +27,18 @@ public static class Tasks
 
     public static void ApproximatedSubgraphs(List<Graph> graphs)
     {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
-
+        Warmup();
         for (int i = 0; i < graphs.Count; i+=2)
         {
             (var subgraph, double time) =
             TimedUtils.Timed(() => new SubgraphUsingClique(new GeneticAlgorithm()).Solve(graphs[i], graphs[i+1]));
             Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, graphs[i], graphs[i+1]);
         }
-    
     }
 
     public static void ExactSubgraphs(List<Graph> graphs)
     {
-        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
-        TimedUtils.Timed(() =>
-            new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(new Graph(new int[1, 1]),
-                new Graph(new int[1, 1])));
-
+        Warmup();
         for (int i = 0; i < graphs.Count; i+=2)
         {
             (var subgraph, double time) =
@@ -69,17 +58,33 @@ public static class Tasks
 
     public static void ExactMatrics(List<Graph> graphs) 
     {
+        Warmup();
         for (int i = 0; i < graphs.Count; i+=2)
         {
-            Console.WriteLine($"Graphs #{i} and #{i+1} are {Graph.ExactDistance(graphs[i], graphs[i+1])} units away");
+            (var distance, var time) =TimedUtils.Timed(() => Graph.ExactDistance(graphs[i], graphs[i+1]));
+            Console.WriteLine(graphs[i]);
+            Console.WriteLine(graphs[i+1]);
+            Console.WriteLine($"Graphs #{i} and #{i+1} are {distance} units away ({time} ms)");
+            Console.WriteLine("===============================================");
         }
     }
 
     public static void ApproximateMetrics(List<Graph> graphs)
     {
+        Warmup();
         for (int i = 0; i < graphs.Count; i+=2)
         {
-            Console.WriteLine($"Graphs #{i} and #{i+1} are {Graph.ApproxDistance(graphs[i], graphs[i+1])} units away");
+            (var distance, var time) =TimedUtils.Timed(() => Graph.ApproxDistance(graphs[i], graphs[i+1]));
+            Console.WriteLine(graphs[i]);
+            Console.WriteLine(graphs[i+1]);
+            Console.WriteLine($"Graphs #{i} and #{i+1} are {distance} units away ({time} ms)");
+            Console.WriteLine("===============================================");
         }
+    }
+
+    private static void Warmup()
+    {
+        // Warm-up (first timed execution is faulty probably because of C# preprocessing taking time)
+        TimedUtils.Timed(() => new BronKerboschMaximumClique().Solve(new Graph(new int[1, 1])));
     }
 }

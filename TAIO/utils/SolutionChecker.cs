@@ -10,20 +10,13 @@ public class SolutionChecker
     public static bool CheckClique(Graph graph, ImmutableSortedSet<int> clique, int L,
         bool verbose = false)
     {
-        if (verbose)
-            Console.WriteLine(
-                $"Checking clique of size {clique.Count} in graph of size {graph.VerticesCount}.");
         int missingEdges = 0;
         for (int i = 0; i < clique.Count; i++)
         {
-            for (int j = 0; j < clique.Count; j++)
+            for (int j = i+1; j < clique.Count; j++)
             {
-                if (i == j)
-                {
-                    continue;
-                }
 
-                if (graph.GetAt(clique[i], clique[j]) >= L)
+                if (int.Min(graph.GetAt(clique[i], clique[j]), graph.GetAt(clique[j], clique[i])) > 0)
                 {
                     continue;
                 }
@@ -47,9 +40,12 @@ public class SolutionChecker
     {
         int differentEdges = 0;
         for (int i = 0; i < mapping.Count; i++)
-        for (int j = i + 1; j < mapping.Count; j++)
-            if (graph1.GetAt(mapping[i].Item1, mapping[j].Item1) !=
-                graph2.GetAt(mapping[i].Item2, mapping[j].Item2))
+        for (int j = 0; j < mapping.Count; j++)
+        {
+            if(i == j)
+                continue;
+            if ((graph1.GetAt(mapping[i].Item1, mapping[j].Item1) > 0 && graph2.GetAt(mapping[i].Item2, mapping[j].Item2) == 0) ||
+                (graph1.GetAt(mapping[i].Item1, mapping[j].Item1) == 0 && graph2.GetAt(mapping[i].Item2, mapping[j].Item2) > 0))
             {
                 differentEdges++;
                 if (verbose)
@@ -57,6 +53,8 @@ public class SolutionChecker
                         $"{mapping[i].Item1} & {mapping[j].Item1} edge in G1 differs from {mapping[i].Item2} & {mapping[j].Item2} edge in G2");
             }
 
+        }
+            
         if (verbose)
             Console.WriteLine(differentEdges != 0
                 ? $"Differences in {differentEdges} edges total."
