@@ -24,9 +24,9 @@ static async Task<int> Main(string[] args)
         
     }
 
-    private static Argument<string> GetPathArgument() 
+    private static Argument<List<string>> GetPathArgument() 
     {
-        return new Argument<string>(
+        return new Argument<List<string>>(
             name: "path to file",
             description: "path to file containing graphs"
         );
@@ -47,7 +47,12 @@ static async Task<int> Main(string[] args)
         cliqueCommand.AddArgument(fileInput);
         
         cliqueCommand.SetHandler((isExact, input) => {
-            List<Graph> graphs = Graph.ParseInputFile(input);
+            if (input.Count != 1)
+            {
+                Console.WriteLine("Clique calculation should be provided with only one file");
+                return;
+            }
+            List<Graph> graphs = Graph.ParseInputFile(input[0]);
             if (isExact) 
             {
                 Tasks.ExactCliques(graphs);
@@ -75,19 +80,20 @@ static async Task<int> Main(string[] args)
         subgraphCommand.AddArgument(fileInput);
         
         subgraphCommand.SetHandler((isExact, input)=> {
-            List<Graph> graphs = Graph.ParseInputFile(input);
-            if (graphs.Count % 2 != 0) 
+            if (input.Count != 2)
             {
-                Console.WriteLine("Amount of graphs in file needs to be divisible by 2");
+                Console.WriteLine("Subgraph calculation should be provided with two files");
                 return;
             }
+            List<Graph> graphs1 = Graph.ParseInputFile(input[0]);
+            List<Graph> graphs2 = Graph.ParseInputFile(input[1]);
             if (isExact) 
             {
-                Tasks.ExactSubgraphs(graphs);
+                Tasks.ExactSubgraphs(graphs1, graphs2);
             }
             else 
             {
-                Tasks.ApproximatedSubgraphs(graphs);
+                Tasks.ApproximatedSubgraphs(graphs1, graphs2);
             }
         }, algorithmType, fileInput);
 
@@ -105,7 +111,7 @@ static async Task<int> Main(string[] args)
         sizeCommand.AddArgument(fileInput);
 
         sizeCommand.SetHandler((input)=>{
-            List<Graph> graphs = Graph.ParseInputFile(input);
+            List<Graph> graphs = Graph.ParseInputFile(input[0]);
             Tasks.Size(graphs);
         }, fileInput);
 
@@ -126,19 +132,20 @@ static async Task<int> Main(string[] args)
         metricsCommand.AddOption(algorithmType);
 
         metricsCommand.SetHandler((isExact, input)=> {
-            List<Graph> graphs = Graph.ParseInputFile(input);
-            if (graphs.Count % 2 != 0) 
+            if (input.Count != 2)
             {
-                Console.WriteLine("Amount of graphs in file needs to be divisible by 2");
+                Console.WriteLine("Subgraph calculation should be provided with two files");
                 return;
             }
+            List<Graph> graphs1 = Graph.ParseInputFile(input[0]);
+            List<Graph> graphs2 = Graph.ParseInputFile(input[1]);
             if (isExact) 
             {
-                Tasks.ExactMatrics(graphs);
+                Tasks.ExactMatrics(graphs1, graphs2);
             }
             else 
             {
-                Tasks.ApproximateMetrics(graphs);
+                Tasks.ApproximateMetrics(graphs1, graphs2);
             }
         }, algorithmType, fileInput);
 

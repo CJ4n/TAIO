@@ -1,0 +1,30 @@
+4
+4
+0 2 0 4
+1 0 4 0
+3 5 0 4
+0 0 3 0
+Identyczne grafy (G1)
+
+5
+0 0 0 6 0
+1 0 4 0 1
+3 4 0 4 0
+0 2 3 0 7
+2 0 0 3 0
+Drugi graf w całości podgrafem pierwszego (G1)
+
+5
+0 0 5 0 0 
+2 0 0 0 0 
+3 7 0 0 3 
+0 0 5 0 7 
+2 0 3 1 0 
+Grafy izomorficzne po permutacji (1,3) (G1)
+
+4
+0 2 0 1
+2 0 1 0
+1 1 0 1
+0 0 1 0
+Trzy podgrafy w grafie różniące się liczbą krawędzi. Wspólny podgraf (V:4, E:10) (G1)

@@ -25,26 +25,26 @@ public static class Tasks
         }
     }
 
-    public static void ApproximatedSubgraphs(List<Graph> graphs)
+    public static void ApproximatedSubgraphs(List<Graph> graphs1, List<Graph> graphs2)
     {
         Warmup();
-        for (int i = 0; i < graphs.Count; i+=2)
+        for (int i = 0; i < graphs1.Count && i < graphs2.Count;i++)
         {
             (var subgraph, double time) =
-            TimedUtils.Timed(() => new SubgraphUsingClique(new GeneticAlgorithm()).Solve(graphs[i], graphs[i+1]));
-            Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, graphs[i], graphs[i+1]);
+            TimedUtils.Timed(() => new SubgraphUsingClique(new GeneticAlgorithm()).Solve(graphs1[i], graphs2[i]));
+            Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, graphs1[i], graphs2[i]);
         }
     }
 
-    public static void ExactSubgraphs(List<Graph> graphs)
+    public static void ExactSubgraphs(List<Graph> graphs1, List<Graph> graphs2)
     {
         Warmup();
-        for (int i = 0; i < graphs.Count; i+=2)
+        for (int i = 0; i < graphs1.Count && i < graphs2.Count; i++)
         {
             (var subgraph, double time) =
                 TimedUtils.Timed(() =>
-                    new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(graphs[i], graphs[i+1]));
-                Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, graphs[i], graphs[i+1]);
+                    new SubgraphUsingClique(new BronKerboschMaximumClique()).Solve(graphs1[i], graphs2[i]));
+                Helpers.EvaluateSolutionForSubgraphProblem(subgraph, time, graphs1[i], graphs2[i]);
         }
     }
 
@@ -56,27 +56,27 @@ public static class Tasks
         }
     }
 
-    public static void ExactMatrics(List<Graph> graphs) 
+    public static void ExactMatrics(List<Graph> graphs1, List<Graph> graphs2) 
     {
         Warmup();
-        for (int i = 0; i < graphs.Count; i+=2)
+        for (int i = 0; i < graphs1.Count && i < graphs2.Count;i++)
         {
-            (var distance, var time) =TimedUtils.Timed(() => Graph.ExactDistance(graphs[i], graphs[i+1]));
-            Console.WriteLine(graphs[i]);
-            Console.WriteLine(graphs[i+1]);
+            (var distance, var time) =TimedUtils.Timed(() => Graph.ExactDistance(graphs1[i], graphs2[i]));
+            Console.WriteLine(graphs1[i]);
+            Console.WriteLine(graphs2[i]);
             Console.WriteLine($"Graphs #{i} and #{i+1} are {distance} units away ({time} ms)");
             Console.WriteLine("===============================================");
         }
     }
 
-    public static void ApproximateMetrics(List<Graph> graphs)
+    public static void ApproximateMetrics(List<Graph> graphs1, List<Graph> graphs2)
     {
         Warmup();
-        for (int i = 0; i < graphs.Count; i+=2)
+        for (int i = 0; i < graphs1.Count && i < graphs2.Count;i++)
         {
-            (var distance, var time) =TimedUtils.Timed(() => Graph.ApproxDistance(graphs[i], graphs[i+1]));
-            Console.WriteLine(graphs[i]);
-            Console.WriteLine(graphs[i+1]);
+            (var distance, var time) =TimedUtils.Timed(() => Graph.ApproxDistance(graphs1[i], graphs2[i]));
+            Console.WriteLine(graphs1[i]);
+            Console.WriteLine(graphs2[i]);
             Console.WriteLine($"Graphs #{i} and #{i+1} are {distance} units away ({time} ms)");
             Console.WriteLine("===============================================");
         }
